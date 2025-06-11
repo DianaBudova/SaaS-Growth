@@ -1,4 +1,6 @@
-import { Link } from '@inertiajs/react';
+import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
+import DangerResponsiveNavLink from '@/Components/DangerResponsiveNavLink';
+import ContentContainer from '@/Components/ContentContainer';
 
 export default function AuthenticatedLayout({ children }) {
     return (
@@ -8,22 +10,25 @@ export default function AuthenticatedLayout({ children }) {
                     <h1 className="text-2xl font-bold">SaaS</h1>
                 </div>
                 <nav className="mt-4 flex flex-col">
-                    <Link href="/dashboard" className="px-6 py-3 text-gray-700 hover:bg-gray-200">Dashboard</Link>
-                    <Link href="/projects" className="px-6 py-3 text-gray-700 hover:bg-gray-200">Projects</Link>
-                    <Link href="/profile" className="px-6 py-3 text-gray-700 hover:bg-gray-200">Profile</Link>
-                    <Link
+                    <ResponsiveNavLink href="/dashboard" className="px-6 py-3 text-gray-700">Dashboard</ResponsiveNavLink>
+                    <ResponsiveNavLink href="/company" className="px-6 py-3 text-gray-700">Companies</ResponsiveNavLink>
+                    <ResponsiveNavLink href="/project" className="px-6 py-3 text-gray-700">Projects</ResponsiveNavLink>
+                    <ResponsiveNavLink href="/profile" className="px-6 py-3 text-gray-700">Profile</ResponsiveNavLink>
+                    <DangerResponsiveNavLink
                         href="/logout"
                         method="post"
                         as="button"
-                        className="text-left px-6 py-3 text-gray-700 hover:bg-gray-200"
+                        className="px-6 py-3"
                     >
-                        <span className="text-red-500">Log Out</span>
-                    </Link>
+                        Log Out
+                    </DangerResponsiveNavLink>
                 </nav>
             </aside>
 
             <div className="flex-1 p-8">
-                {children}
+                <ContentContainer>
+                    {children}
+                </ContentContainer>
             </div>
         </div>
     );
