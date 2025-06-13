@@ -22,6 +22,15 @@ class CompanyController extends Controller
         ]);
     }
 
+    public function show(int $id): Response
+    {
+        $company = Company::findOrFail($id);
+
+        return Inertia::render('Company/Company', [
+            'company' => $company,
+        ]);
+    }
+
     public function store(CompanyCreateRequest $request): RedirectResponse
     {
         $validated = $request->validated();

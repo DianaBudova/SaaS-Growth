@@ -15,20 +15,21 @@ export default function Companies({ companies: initialCompanies = [], flash }) {
     const {
         data,
         setData,
+        get,
         post,
         put,
         delete: destroy,
         processing,
         errors,
     } = useForm({
-        id: '',
-        name: '',
+        id: undefined,
+        name: undefined,
     });
 
     const openCreateModal = (e) => {
         e.preventDefault();
 
-        setData({ id: '', name: '' });
+        setData({ id: undefined, name: undefined });
         setCreateModalVisible(true);
     };
 
@@ -37,12 +38,22 @@ export default function Companies({ companies: initialCompanies = [], flash }) {
         setEditModalVisible(true);
     };
 
+    const handleShow = (e, companyId) => {
+        e.preventDefault();
+
+        setData({ id: undefined, name: undefined });
+        get(`/company/show/${companyId}`, {});
+    };
+
     const handleCreate = (e) => {
         e.preventDefault();
 
         post('/company/create', {
             onSuccess: () => {
                 setCreateModalVisible(false);
+            },
+            onFinish: () => {
+                setData({ id: undefined, name: undefined });
             },
         });
     };
@@ -54,13 +65,20 @@ export default function Companies({ companies: initialCompanies = [], flash }) {
             onSuccess: () => {
                 setEditModalVisible(false);
             },
+            onFinish: () => {
+                setData({ id: undefined, name: undefined });
+            },
         });
     };
 
     const handleDelete = (e, companyId) => {
         e.preventDefault();
 
-        destroy(`/company/delete/${companyId}`, {});
+        destroy(`/company/delete/${companyId}`, {
+            onFinish: () => {
+                setData({ id: undefined, name: undefined });
+            },
+        });
     };
 
     return (
@@ -88,6 +106,9 @@ export default function Companies({ companies: initialCompanies = [], flash }) {
                                 {company.name}
                             </div>
                             <div className="flex gap-3">
+                                <SecondaryButton disabled={processing} onClick={(e) => handleShow(e, company.id)}>
+                                    Show
+                                </SecondaryButton>
                                 <SecondaryButton disabled={processing} onClick={() => openEditModal(company)}>
                                     Edit
                                 </SecondaryButton>

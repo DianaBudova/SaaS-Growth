@@ -18,6 +18,7 @@ Route::get('/dashboard', function () {
 Route::middleware('auth')->group(function () {
     Route::group(['prefix' => 'company'], function () {
         Route::get('/', [CompanyController::class, 'index'])->name('company.index');
+        Route::get('/show/{id}', [CompanyController::class, 'show'])->name('company.show');
         Route::post('/create', [CompanyController::class, 'store'])->name('company.store');
         Route::put('/update/{id}', [CompanyController::class, 'update'])->name('company.update');
         Route::delete('/delete/{id}', [CompanyController::class, 'destroy'])->name('company.destroy');
