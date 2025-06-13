@@ -3,11 +3,11 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton from '@/Components/SecondaryButton';
 import TextInput from '@/Components/TextInput';
 
-export default function CreateModal({ data, setData, errors, processing, onClose, onSubmit, show }) {
+export default function EditModal({ data, setData, errors, processing, onClose, onSubmit, show }) {
     return (
         <Modal show={show} onClose={onClose}>
             <div className="p-6">
-                <h1 className="text-lg font-medium text-gray-900 mb-4">Create Company</h1>
+                <h1 className="text-lg font-medium text-gray-900 mb-4">Update Company</h1>
 
                 <form onSubmit={onSubmit}>
                     <TextInput
@@ -17,7 +17,6 @@ export default function CreateModal({ data, setData, errors, processing, onClose
                         onChange={(e) => setData('name', e.target.value)}
                         className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring"
                         placeholder="Company name"
-                        disabled={processing}
                         isFocused
                     />
                     
@@ -36,7 +35,7 @@ export default function CreateModal({ data, setData, errors, processing, onClose
                             type="submit"
                             disabled={processing}
                         >
-                            Create
+                            Update
                         </PrimaryButton>
                     </div>
                 </form>

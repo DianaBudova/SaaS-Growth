@@ -1,31 +1,72 @@
 import { useState } from 'react';
-import PrimaryButton from '@/Components/PrimaryButton';
+import { useForm, Link } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Link, useForm } from '@inertiajs/react';
+import FlashMessage from '@/Components/FlashMessage';
+import PrimaryButton from '@/Components/PrimaryButton';
+import SecondaryButton from '@/Components/SecondaryButton';
+import DangerButton from '@/Components/DangerButton';
 import CreateModal from './CreateModal';
+import EditModal from './EditModal';
 
-export default function Companies(props) {
-    const [companies, setCompanies] = useState(props?.companies ?? []);
-    const [showModal, setShowModal] = useState(false);
+export default function Companies({ companies: initialCompanies = [], flash }) {
+    const [createModalVisible, setCreateModalVisible] = useState(false);
+    const [editModalVisible, setEditModalVisible] = useState(false);
 
-    const { data, setData, post, processing, errors, reset } = useForm({
-        name: ''
+    const {
+        data,
+        setData,
+        post,
+        put,
+        delete: destroy,
+        processing,
+        errors,
+    } = useForm({
+        id: '',
+        name: '',
     });
 
-    const handleSubmit = (e) => {
+    const openCreateModal = (e) => {
+        e.preventDefault();
+
+        setData({ id: '', name: '' });
+        setCreateModalVisible(true);
+    };
+
+    const openEditModal = (company) => {
+        setData({ id: company.id, name: company.name });
+        setEditModalVisible(true);
+    };
+
+    const handleCreate = (e) => {
         e.preventDefault();
 
         post('/company/create', {
-            preserveState: false,
             onSuccess: () => {
-                reset();
-                setShowModal(false);
+                setCreateModalVisible(false);
             },
         });
     };
 
+    const handleUpdate = (e) => {
+        e.preventDefault();
+
+        put(`/company/update/${data.id}`, {
+            onSuccess: () => {
+                setEditModalVisible(false);
+            },
+        });
+    };
+
+    const handleDelete = (e, companyId) => {
+        e.preventDefault();
+
+        destroy(`/company/delete/${companyId}`, {});
+    };
+
     return (
         <AuthenticatedLayout>
+            <FlashMessage message={flash?.success} />
+
             <div className="flex items-center justify-between mb-6">
                 <div>
                     <h1 className="text-lg font-medium text-gray-900">Companies</h1>
@@ -34,16 +75,26 @@ export default function Companies(props) {
                     </p>
                 </div>
 
-                <PrimaryButton onClick={() => setShowModal(true)}>
+                <PrimaryButton disabled={processing} onClick={openCreateModal}>
                     + Create Company
                 </PrimaryButton>
             </div>
 
-            {companies.length > 0 ? (
+            {initialCompanies.length > 0 ? (
                 <ul className="divide-y divide-gray-200">
-                    {companies.map((company) => (
-                        <li key={company.id} className="py-3">
-                            <div className="text-gray-800 font-medium">{company.name}</div>
+                    {initialCompanies.map((company) => (
+                        <li key={company.id} className="flex items-center justify-between py-3">
+                            <div className="text-gray-800 font-medium">
+                                {company.name}
+                            </div>
+                            <div className="flex gap-3">
+                                <SecondaryButton disabled={processing} onClick={() => openEditModal(company)}>
+                                    Edit
+                                </SecondaryButton>
+                                <DangerButton disabled={processing} onClick={(e) => handleDelete(e, company.id)}>
+                                    Remove
+                                </DangerButton>
+                            </div>
                         </li>
                     ))}
                 </ul>
@@ -53,7 +104,8 @@ export default function Companies(props) {
                     <Link
                         className="text-indigo-500 font-medium hover:underline"
                         href="#"
-                        onClick={() => setShowModal(true)}
+                        onClick={openCreateModal}
+                        disabled={processing}
                     >
                         here
                     </Link>{' '}
@@ -61,15 +113,27 @@ export default function Companies(props) {
                 </div>
             )}
 
-            {showModal && (
+            {createModalVisible && (
                 <CreateModal
-                    show={showModal}
-                    onClose={() => setShowModal(false)}
+                    show={createModalVisible}
+                    onClose={() => setCreateModalVisible(false)}
                     data={data}
                     setData={setData}
                     errors={errors}
                     processing={processing}
-                    onSubmit={handleSubmit}
+                    onSubmit={handleCreate}
+                />
+            )}
+
+            {editModalVisible && (
+                <EditModal
+                    show={editModalVisible}
+                    onClose={() => setEditModalVisible(false)}
+                    data={data}
+                    setData={setData}
+                    errors={errors}
+                    processing={processing}
+                    onSubmit={handleUpdate}
                 />
             )}
         </AuthenticatedLayout>
