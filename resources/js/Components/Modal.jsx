@@ -7,6 +7,7 @@ import {
 
 export default function Modal({
     children,
+    title = 'Modal Title',
     show = false,
     maxWidth = '2xl',
     closeable = true,
@@ -56,7 +57,24 @@ export default function Modal({
                     <DialogPanel
                         className={`mb-6 transform overflow-hidden rounded-md bg-white shadow-md transition-all sm:mx-auto sm:w-full ${maxWidthClass}`}
                     >
-                        {children}
+                        {/* Header */}
+                        <div className="flex items-center justify-between px-6 py-4 border-b">
+                            <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
+                            {closeable && (
+                                <button
+                                    onClick={close}
+                                    className="text-gray-400 hover:text-gray-600 transition"
+                                    aria-label="Close"
+                                >
+                                    X
+                                </button>
+                            )}
+                        </div>
+
+                        {/* Content */}
+                        <div className="p-6">
+                            {children}
+                        </div>
                     </DialogPanel>
                 </TransitionChild>
             </Dialog>
