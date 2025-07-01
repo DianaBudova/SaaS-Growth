@@ -1,3 +1,4 @@
+import InputLabel from '@/Components/InputLabel';
 import Modal from '@/Components/Modal';
 import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton from '@/Components/SecondaryButton';
@@ -5,10 +6,9 @@ import TextInput from '@/Components/TextInput';
 
 export default function EditModal({ data, setData, errors, processing, onClose, onSubmit, show }) {
     return (
-        <Modal show={show} onClose={onClose}>
-            <h1 className="text-lg font-medium text-gray-900 mb-4">Update Company</h1>
-
+        <Modal show={show} onClose={onClose} title="Update Company">
             <form onSubmit={onSubmit}>
+                <InputLabel value="Company Name" />
                 <TextInput
                     type="text"
                     name="name"
