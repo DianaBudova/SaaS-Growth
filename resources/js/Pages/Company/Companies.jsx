@@ -7,6 +7,7 @@ import SecondaryButton from '@/Components/SecondaryButton';
 import DangerButton from '@/Components/DangerButton';
 import CreateModal from './CreateModal';
 import EditModal from './EditModal';
+import Table from '@/Components/Table';
 
 export default function Companies({ companies: initialCompanies = [], flash }) {
     const [createModalVisible, setCreateModalVisible] = useState(false);
@@ -89,69 +90,52 @@ export default function Companies({ companies: initialCompanies = [], flash }) {
                 <div>
                     <h1 className="text-lg font-medium text-gray-900">Companies</h1>
                     <p className="mt-1 text-sm text-gray-600">
-                        Here are the companies you belong to
+                        Here are the companies you belong to.
                     </p>
                 </div>
-            </div>
 
-            <div className="flex items-center justify-end mb-6">
                 <PrimaryButton disabled={processing} onClick={openCreateModal}>
                     + Create Company
                 </PrimaryButton>
             </div>
 
             {initialCompanies.length > 0 ? (
-                <div className="overflow-x-auto border rounded-lg">
-                    <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
-                            <tr>
-                                <th
-                                    scope="col"
-                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                >
-                                    Company Name
-                                </th>
-                                <th
-                                    scope="col"
-                                    className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                >
-                                    Actions
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
-                            {initialCompanies.map((company) => (
-                                <tr key={company.id}>
-                                    <td className="px-6 py-4 whitespace-nowrap text-gray-800 font-medium">
-                                        {company.name}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-right">
-                                        <div className="flex justify-end gap-2">
-                                            <SecondaryButton
-                                                disabled={processing}
-                                                onClick={(e) => handleShow(e, company.id)}
-                                            >
-                                                Show
-                                            </SecondaryButton>
-                                            <SecondaryButton
-                                                disabled={processing}
-                                                onClick={() => openEditModal(company)}
-                                            >
-                                                Edit
-                                            </SecondaryButton>
-                                            <DangerButton
-                                                disabled={processing}
-                                                onClick={(e) => handleDelete(e, company.id)}
-                                            >
-                                                Remove
-                                            </DangerButton>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                <Table
+                    columns={[
+                        { key: 'name', label: 'Company Name' },
+                        { key: 'actions', label: 'Actions', align: 'right' },
+                    ]}
+                    data={initialCompanies}
+                    renderRow={(company) => (
+                        <tr key={company.id}>
+                            <td className="px-6 py-4 whitespace-nowrap text-gray-800 font-medium">
+                                {company.name}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-gray-800 font-medium">
+                                <div className="flex justify-end gap-2">
+                                    <SecondaryButton
+                                        disabled={processing}
+                                        onClick={(e) => handleShow(e, company.id)}
+                                    >
+                                        Show
+                                    </SecondaryButton>
+                                    <SecondaryButton
+                                        disabled={processing}
+                                        onClick={() => openEditModal(company)}
+                                    >
+                                        Edit
+                                    </SecondaryButton>
+                                    <DangerButton
+                                        disabled={processing}
+                                        onClick={(e) => handleDelete(e, company.id)}
+                                    >
+                                        Remove
+                                    </DangerButton>
+                                </div>
+                            </td>
+                        </tr>
+                    )}
+                />
             ) : (
                 <div className="text-gray-500 text-center py-10 border-2 border-dashed rounded-lg">
                     No companies yet. Click{' '}

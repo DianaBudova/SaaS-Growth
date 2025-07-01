@@ -3,6 +3,7 @@ import { useForm, Link } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import FlashMessage from '@/Components/FlashMessage';
 import CreateProjectModal from '@/Pages/Project/CreateModal';
+import PrimaryButton from '@/Components/PrimaryButton';
 
 export default function Company({ company, flash }) {
     // States
@@ -87,71 +88,85 @@ export default function Company({ company, flash }) {
         <AuthenticatedLayout>
             <FlashMessage message={flash?.success} />
 
-            <div className="grid grid-cols-5">
-                <div className="col-span-1">
-                    <h1 className="text-2xl font-semibold text-gray-900 mb-2">
-                        {company.name}
-                    </h1>
+            <div className="flex flex-col lg:flex-row gap-6">
+                {/* Sidebar */}
+                <aside className="w-full lg:w-1/4 bg-white border rounded-lg p-6 shadow">
+                    <h1 className="text-xl font-semibold text-gray-900 mb-2">{company.name}</h1>
                     <p className="text-sm text-gray-500 mb-4">
-                        Company ID: <span className="font-mono text-blue-600">{company.id}</span>
+                        Company ID:{' '}
+                        <span className="font-mono text-blue-600">{company.id}</span>
                     </p>
 
-                    <div className="border-t border-gray-200 pt-4 mt-4 space-y-2">
+                    <div className="border-t border-gray-200 pt-4 mt-4 space-y-2 text-sm">
                         <p>
                             <span className="font-medium text-gray-700">Owner:</span>{' '}
                             {company.owner_id ?? 'N/A'}
                         </p>
                         <p>
-                            <span className="font-medium text-gray-700">Created at:</span>{' '}
+                            <span className="font-medium text-gray-700">Created:</span>{' '}
                             {new Date(company.created_at).toLocaleDateString()}
                         </p>
                         <p>
-                            <span className="font-medium text-gray-700">Updated at:</span>{' '}
+                            <span className="font-medium text-gray-700">Updated:</span>{' '}
                             {new Date(company.updated_at).toLocaleDateString()}
                         </p>
                     </div>
-                </div>
+                </aside>
 
-                <div className="col-span-4 border-l">
-                    <h1 className="text-2xl font-semibold text-gray-900 text-center mb-8">
-                        Projects
-                    </h1>
+                {/* Projects */}
+                <main className="flex-1 bg-white border rounded-lg p-6 shadow">
+                    <div className="flex items-center justify-between mb-4">
+                        <h2 className="text-xl font-semibold text-gray-900">Projects</h2>
 
-                    <hr className="mb-4"></hr>
+                        <PrimaryButton
+                            onClick={openCreateProjectModal}
+                            disabled={processing}
+                        >
+                            + Create Project
+                        </PrimaryButton>
+                    </div>
 
                     {isLoading ? (
-                        <div className="flex flex-col justify-center items-center space-y-2">
+                        <div className="flex flex-col justify-center items-center space-y-2 py-10">
                             <div className="w-8 h-8 border-4 border-indigo-500 border-dashed rounded-full animate-spin"></div>
                             <span className="text-gray-600">Loading projects...</span>
                         </div>
                     ) : error ? (
                         <div className="text-red-500 text-center py-10">
-                            ⚠️ {error}
+                            {error}
                         </div>
                     ) : projects.length > 0 ? (
-                        <ul className="space-y-2">
-                            {projects.map((project) => (
-                                <li key={project.id} className="border rounded px-4 py-2 shadow">
-                                    <h3 className="font-semibold">{project.name}</h3>
-                                    <p className="text-sm text-gray-600">ID: {project.id}</p>
-                                </li>
-                            ))}
+                        <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {projects.map((project) => (
+                            <li
+                            key={project.id}
+                            className="border rounded-lg p-4 shadow hover:shadow-md transition"
+                            >
+                            <h3 className="font-semibold text-gray-900">
+                                {project.name}
+                            </h3>
+                            <p className="text-sm text-gray-600">
+                                ID: {project.id}
+                            </p>
+                            </li>
+                        ))}
                         </ul>
                     ) : (
-                        <div className="text-gray-500 text-center py-10">
+                        <div className="text-gray-500 text-center py-10 border-2 border-dashed rounded-lg">
                             No projects in this company yet. Click{' '}
-                            <Link
-                                className="text-indigo-500 font-medium hover:underline"
-                                href="#"
+                            <button
+                                type="button"
                                 onClick={openCreateProjectModal}
+                                disabled={processing}
+                                className="text-indigo-500 font-medium hover:underline"
                             >
                                 here
-                            </Link>{' '}
+                            </button>{' '}
                             to create one.
                         </div>
                     )}
+                    </main>
                 </div>
-            </div>
 
             {createProjectModalVisible && (
                 <CreateProjectModal
