@@ -4,17 +4,27 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton from '@/Components/SecondaryButton';
 import TextInput from '@/Components/TextInput';
 
-export default function CreateModal({ data, setData, errors, processing, onClose, onSubmit, show }) {
+export default function CompanyModal({
+    data,
+    setData,
+    errors,
+    processing,
+    onClose,
+    onSubmit,
+    show,
+    title,
+    submitAction
+}) {
     return (
-        <Modal show={show} onClose={onClose} title="Create Company">
+        <Modal show={show} onClose={onClose} title={title}>
             <form onSubmit={onSubmit}>
                 <InputLabel value="Company Name" />
                 <TextInput
                     type="text"
                     name="name"
-                    value={data.name}
+                    value={data.name ?? ''}
                     onChange={(e) => setData('name', e.target.value)}
-                    className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring"
+                    className="w-full"
                     placeholder="Company name"
                     disabled={processing}
                     isFocused
@@ -35,7 +45,7 @@ export default function CreateModal({ data, setData, errors, processing, onClose
                         type="submit"
                         disabled={processing}
                     >
-                        Create
+                        {submitAction}
                     </PrimaryButton>
                 </div>
             </form>

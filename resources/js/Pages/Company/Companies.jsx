@@ -5,9 +5,8 @@ import FlashMessage from '@/Components/FlashMessage';
 import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton from '@/Components/SecondaryButton';
 import DangerButton from '@/Components/DangerButton';
-import CreateModal from './CreateModal';
-import EditModal from './EditModal';
 import Table from '@/Components/Table';
+import CompanyModal from './CompanyModal';
 
 export default function Companies({ companies: initialCompanies = [], flash }) {
     const [createModalVisible, setCreateModalVisible] = useState(false);
@@ -51,6 +50,7 @@ export default function Companies({ companies: initialCompanies = [], flash }) {
 
         post('/company/create', {
             onSuccess: () => {
+                get(window.location.pathname);
                 setCreateModalVisible(false);
             },
             onFinish: () => {
@@ -64,6 +64,7 @@ export default function Companies({ companies: initialCompanies = [], flash }) {
 
         put(`/company/update/${data.id}`, {
             onSuccess: () => {
+                get(window.location.pathname);
                 setEditModalVisible(false);
             },
             onFinish: () => {
@@ -76,6 +77,9 @@ export default function Companies({ companies: initialCompanies = [], flash }) {
         e.preventDefault();
 
         destroy(`/company/delete/${companyId}`, {
+            onSuccess: () => {
+                get(window.location.pathname);
+            },
             onFinish: () => {
                 setData({ id: undefined, name: undefined });
             },
@@ -109,16 +113,17 @@ export default function Companies({ companies: initialCompanies = [], flash }) {
                     renderRow={(company) => (
                         <tr key={company.id}>
                             <td className="px-6 py-4 whitespace-nowrap text-gray-800 font-medium">
-                                {company.name}
+                                <button
+                                    type="button"
+                                    className="text-indigo-500 font-bold hover:underline"
+                                    onClick={(e) => handleShow(e, company.id)}
+                                    disabled={processing}
+                                >
+                                    {company.name}
+                                </button>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-gray-800 font-medium">
-                                <div className="flex justify-end gap-2">
-                                    <SecondaryButton
-                                        disabled={processing}
-                                        onClick={(e) => handleShow(e, company.id)}
-                                    >
-                                        Show
-                                    </SecondaryButton>
+                                <div className="flex justify-end gap-3">
                                     <SecondaryButton
                                         disabled={processing}
                                         onClick={() => openEditModal(company)}
@@ -126,10 +131,13 @@ export default function Companies({ companies: initialCompanies = [], flash }) {
                                         Edit
                                     </SecondaryButton>
                                     <DangerButton
+                                        className="!p-2.5"
                                         disabled={processing}
                                         onClick={(e) => handleDelete(e, company.id)}
                                     >
-                                        Remove
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-4 h-4 fill-current">
+                                            <path d="M 10.806641 2 C 10.289641 2 9.7956875 2.2043125 9.4296875 2.5703125 L 9 3 L 4 3 A 1.0001 1.0001 0 1 0 4 5 L 20 5 A 1.0001 1.0001 0 1 0 20 3 L 15 3 L 14.570312 2.5703125 C 14.205312 2.2043125 13.710359 2 13.193359 2 L 10.806641 2 z M 4.3652344 7 L 5.8925781 20.263672 C 6.0245781 21.253672 6.877 22 7.875 22 L 16.123047 22 C 17.121047 22 17.974422 21.254859 18.107422 20.255859 L 19.634766 7 L 4.3652344 7 z"></path>
+                                        </svg>
                                     </DangerButton>
                                 </div>
                             </td>
@@ -137,7 +145,7 @@ export default function Companies({ companies: initialCompanies = [], flash }) {
                     )}
                 />
             ) : (
-                <div className="text-gray-500 text-center py-10 border-2 border-dashed rounded-lg">
+                <div className="text-gray-600 text-center py-10 border-2 border-dashed rounded-lg">
                     No companies yet. Click{' '}
                     <button
                         type="button"
@@ -152,7 +160,7 @@ export default function Companies({ companies: initialCompanies = [], flash }) {
             )}
 
             {createModalVisible && (
-                <CreateModal
+                <CompanyModal
                     show={createModalVisible}
                     onClose={() => setCreateModalVisible(false)}
                     data={data}
@@ -160,11 +168,13 @@ export default function Companies({ companies: initialCompanies = [], flash }) {
                     errors={errors}
                     processing={processing}
                     onSubmit={handleCreate}
+                    title="Create Company"
+                    submitAction="Create"
                 />
             )}
 
             {editModalVisible && (
-                <EditModal
+                <CompanyModal
                     show={editModalVisible}
                     onClose={() => setEditModalVisible(false)}
                     data={data}
@@ -172,6 +182,8 @@ export default function Companies({ companies: initialCompanies = [], flash }) {
                     errors={errors}
                     processing={processing}
                     onSubmit={handleUpdate}
+                    title="Update Company"
+                    submitAction="Update"
                 />
             )}
         </AuthenticatedLayout>
