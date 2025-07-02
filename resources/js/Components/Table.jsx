@@ -1,6 +1,6 @@
 export default function Table({ columns, data, renderRow }) {
     return (
-        <div className="overflow-x-auto border rounded-lg">
+        <div className="overflow-x-auto border rounded">
             <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                     <tr>

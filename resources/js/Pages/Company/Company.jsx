@@ -1,15 +1,19 @@
 import { useEffect, useState } from 'react';
-import { useForm, Link } from '@inertiajs/react';
+import { useForm } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import FlashMessage from '@/Components/FlashMessage';
-import CreateProjectModal from '@/Pages/Project/CreateModal';
+import ProjectModal from '@/Pages/Project/ProjectModal';
 import PrimaryButton from '@/Components/PrimaryButton';
+import Table from '@/Components/Table';
+import SecondaryButton from '@/Components/SecondaryButton';
+import DangerButton from '@/Components/DangerButton';
 
 export default function Company({ company, flash }) {
     // States
-    const [createProjectModalVisible, setCreateProjectModalVisible] = useState(false);
-
     const [projects, setProjects] = useState([]);
+
+    const [createProjectModalVisible, setCreateProjectModalVisible] = useState(false);
+    const [editProjectModalVisible, setEditProjectModalVisible] = useState(false);
 
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -62,6 +66,8 @@ export default function Company({ company, flash }) {
 
 
     // Functions
+
+    // Create
     const openCreateProjectModal = (e) => {
         e.preventDefault();
 
@@ -74,7 +80,56 @@ export default function Company({ company, flash }) {
 
         post('/project/create', {
             onSuccess: () => {
+                get(window.location.pathname);
                 setCreateProjectModalVisible(false);
+            },
+            onFinish: () => {
+                setData({ id: undefined, company_id: company.id, name: undefined, description: undefined, start_date: undefined, end_date: undefined });
+            },
+        });
+    };
+
+
+
+    // Edit
+    const openEditProjectModal = (project) => {
+        setData({ id: project.id, company_id: company.id, name: project.name, description: project.description, start_date: project.start_date, end_date: project.end_date });
+        setEditProjectModalVisible(true);
+    };
+
+    const handleUpdateProject = (e) => {
+        e.preventDefault();
+
+        put(`/project/update/${data.id}`, {
+            onSuccess: () => {
+                get(window.location.pathname);
+                setEditProjectModalVisible(false);
+            },
+            onFinish: () => {
+                setData({ id: undefined, company_id: company.id, name: undefined, description: undefined, start_date: undefined, end_date: undefined });
+            },
+        });
+    };
+
+
+
+    // Show
+    const handleShowProject = (e, projectId) => {
+        e.preventDefault();
+
+        setData({ id: undefined, company_id: company.id, name: undefined, description: undefined, start_date: undefined, end_date: undefined });
+        get(`/project/show/${projectId}`, {});
+    };
+
+
+
+    // Delete
+    const handleDeleteProject = (e, projectId) => {
+        e.preventDefault();
+
+        destroy(`/project/delete/${projectId}`, {
+            onSuccess: () => {
+                get(window.location.pathname);
             },
             onFinish: () => {
                 setData({ id: undefined, company_id: company.id, name: undefined, description: undefined, start_date: undefined, end_date: undefined });
@@ -88,11 +143,11 @@ export default function Company({ company, flash }) {
         <AuthenticatedLayout>
             <FlashMessage message={flash?.success} />
 
-            <div className="flex flex-col lg:flex-row gap-6">
+            <div className="flex flex-col lg:flex-row">
                 {/* Sidebar */}
-                <aside className="w-full lg:w-1/4 bg-white border rounded-lg p-6 shadow">
+                <aside className="w-full lg:w-1/4 bg-white rounded">
                     <h1 className="text-xl font-semibold text-gray-900 mb-2">{company.name}</h1>
-                    <p className="text-sm text-gray-500 mb-4">
+                    <p className="text-sm text-gray-600 mb-4">
                         Company ID:{' '}
                         <span className="font-mono text-blue-600">{company.id}</span>
                     </p>
@@ -114,9 +169,14 @@ export default function Company({ company, flash }) {
                 </aside>
 
                 {/* Projects */}
-                <main className="flex-1 bg-white border rounded-lg p-6 shadow">
+                <main className="flex-1 bg-white border-l rounded pl-5">
                     <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-xl font-semibold text-gray-900">Projects</h2>
+                        <div>
+                            <h1 className="text-xl font-semibold text-gray-900">Projects</h1>
+                            <p className="mt-1 text-sm text-gray-600">
+                                Here are the projects that belong to this company.
+                            </p>
+                        </div>
 
                         <PrimaryButton
                             onClick={openCreateProjectModal}
@@ -136,23 +196,64 @@ export default function Company({ company, flash }) {
                             {error}
                         </div>
                     ) : projects.length > 0 ? (
-                        <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {projects.map((project) => (
-                            <li
-                            key={project.id}
-                            className="border rounded-lg p-4 shadow hover:shadow-md transition"
-                            >
-                            <h3 className="font-semibold text-gray-900">
-                                {project.name}
-                            </h3>
-                            <p className="text-sm text-gray-600">
-                                ID: {project.id}
-                            </p>
-                            </li>
-                        ))}
-                        </ul>
+                        <Table
+                            columns={[
+                                { key: 'name', label: 'Project Name' },
+                                { key: 'description', label: 'Project Description' },
+                                { key: 'start_date', label: 'Start Date' },
+                                { key: 'end_date', label: 'End Date' },
+                                { key: 'actions', label: 'Actions', align: 'right' },
+                            ]}
+                            data={projects}
+                            renderRow={(project) => (
+                                <tr key={project.id}>
+                                    <td className="px-6 py-4 whitespace-nowrap text-gray-800 font-medium">
+                                        <button
+                                            type="button"
+                                            className="text-indigo-500 font-bold hover:underline"
+                                            onClick={(e) => handleShowProject(e, project.id)}
+                                            disabled={processing}
+                                        >
+                                            {project.name ?? '--'}
+                                        </button>
+                                    </td>
+
+                                    <td className="px-6 py-4 whitespace-nowrap text-gray-800 font-medium">
+                                        {project.description ?? '--'}
+                                    </td>
+
+                                    <td className="px-6 py-4 whitespace-nowrap text-gray-800 font-medium">
+                                        {project.start_date ?? '--'}
+                                    </td>
+
+                                    <td className="px-6 py-4 whitespace-nowrap text-gray-800 font-medium">
+                                        {project.end_date ?? '--'}
+                                    </td>
+
+                                    <td className="px-6 py-4 whitespace-nowrap text-gray-800 font-medium">
+                                        <div className="flex justify-end gap-3">
+                                            <SecondaryButton
+                                                disabled={processing}
+                                                onClick={() => openEditProjectModal(project)}
+                                            >
+                                                Edit
+                                            </SecondaryButton>
+                                            <DangerButton
+                                                className="!p-2.5"
+                                                disabled={processing}
+                                                onClick={(e) => handleDeleteProject(e, project.id)}
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-4 h-4 fill-current">
+                                                    <path d="M 10.806641 2 C 10.289641 2 9.7956875 2.2043125 9.4296875 2.5703125 L 9 3 L 4 3 A 1.0001 1.0001 0 1 0 4 5 L 20 5 A 1.0001 1.0001 0 1 0 20 3 L 15 3 L 14.570312 2.5703125 C 14.205312 2.2043125 13.710359 2 13.193359 2 L 10.806641 2 z M 4.3652344 7 L 5.8925781 20.263672 C 6.0245781 21.253672 6.877 22 7.875 22 L 16.123047 22 C 17.121047 22 17.974422 21.254859 18.107422 20.255859 L 19.634766 7 L 4.3652344 7 z"></path>
+                                                </svg>
+                                            </DangerButton>
+                                        </div>
+                                    </td>
+                                </tr>
+                            )}
+                        />
                     ) : (
-                        <div className="text-gray-500 text-center py-10 border-2 border-dashed rounded-lg">
+                        <div className="text-gray-600 text-center py-10 border-2 border-dashed rounded-lg">
                             No projects in this company yet. Click{' '}
                             <button
                                 type="button"
@@ -165,11 +266,11 @@ export default function Company({ company, flash }) {
                             to create one.
                         </div>
                     )}
-                    </main>
-                </div>
+                </main>
+            </div>
 
             {createProjectModalVisible && (
-                <CreateProjectModal
+                <ProjectModal
                     show={createProjectModalVisible}
                     onClose={() => setCreateProjectModalVisible(false)}
                     data={data}
@@ -177,6 +278,22 @@ export default function Company({ company, flash }) {
                     errors={errors}
                     processing={processing}
                     onSubmit={handleCreateProject}
+                    title="Create Project"
+                    submitAction="Create"
+                />
+            )}
+
+            {editProjectModalVisible && (
+                <ProjectModal
+                    show={editProjectModalVisible}
+                    onClose={() => setEditProjectModalVisible(false)}
+                    data={data}
+                    setData={setData}
+                    errors={errors}
+                    processing={processing}
+                    onSubmit={handleUpdateProject}
+                    title="Update Project"
+                    submitAction="Update"
                 />
             )}
         </AuthenticatedLayout>

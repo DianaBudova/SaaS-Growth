@@ -24,7 +24,12 @@ Route::middleware('auth')->group(function () {
         Route::delete('/delete/{id}', [CompanyController::class, 'destroy'])->name('company.destroy');
     });
 
-    Route::get('/project', [ProjectController::class, 'getAll'])->name('project.get');
+    Route::group(['prefix' => 'project'], function () {
+        Route::get('/', [ProjectController::class, 'index'])->name('project.index');
+        Route::post('/create', [ProjectController::class, 'store'])->name('project.store');
+        Route::put('/update/{id}', [ProjectController::class, 'update'])->name('project.update');
+        Route::delete('/delete/{id}', [ProjectController::class, 'destroy'])->name('project.destroy');
+    });
 
     Route::group(['prefix' => 'profile'], function () {
         Route::get('/', [ProfileController::class, 'edit'])->name('profile.edit');
