@@ -9,6 +9,8 @@ import SecondaryButton from '@/Components/SecondaryButton';
 import DangerButton from '@/Components/DangerButton';
 import Accordion from '@/Components/Accordion';
 import { AccordionItem } from '@/Components/AccordionItem';
+import AccordionHeader from '@/Components/AccordionHeader';
+import AccordionContent from '@/Components/AccordionContent';
 
 export default function Company({ company, flash }) {
     // States
@@ -23,6 +25,15 @@ export default function Company({ company, flash }) {
 
 
     // Form
+    const initialFormState = {
+        id: undefined,
+        company_id: company.id,
+        name: undefined,
+        description: undefined,
+        start_date: undefined,
+        end_date: undefined
+    };
+
     const {
         data,
         setData,
@@ -32,14 +43,9 @@ export default function Company({ company, flash }) {
         delete: destroy,
         processing,
         errors,
-    } = useForm({
-        id: undefined,
-        company_id: company.id,
-        name: undefined,
-        description: undefined,
-        start_date: undefined,
-        end_date: undefined
-    });
+    } = useForm(initialFormState);
+
+    const resetForm = () => setData(initialFormState);
 
 
 
@@ -73,7 +79,8 @@ export default function Company({ company, flash }) {
     const openCreateProjectModal = (e) => {
         e.preventDefault();
 
-        setData({ id: undefined, company_id: company.id, name: undefined, description: undefined, start_date: undefined, end_date: undefined });
+        resetForm();
+
         setCreateProjectModalVisible(true);
     };
 
@@ -86,7 +93,7 @@ export default function Company({ company, flash }) {
                 setCreateProjectModalVisible(false);
             },
             onFinish: () => {
-                setData({ id: undefined, company_id: company.id, name: undefined, description: undefined, start_date: undefined, end_date: undefined });
+                resetForm();
             },
         });
     };
@@ -108,7 +115,7 @@ export default function Company({ company, flash }) {
                 setEditProjectModalVisible(false);
             },
             onFinish: () => {
-                setData({ id: undefined, company_id: company.id, name: undefined, description: undefined, start_date: undefined, end_date: undefined });
+                resetForm();
             },
         });
     };
@@ -119,7 +126,8 @@ export default function Company({ company, flash }) {
     const handleShowProject = (e, projectId) => {
         e.preventDefault();
 
-        setData({ id: undefined, company_id: company.id, name: undefined, description: undefined, start_date: undefined, end_date: undefined });
+        resetForm();
+
         get(`/project/show/${projectId}`, {});
     };
 
@@ -134,7 +142,7 @@ export default function Company({ company, flash }) {
                 get(window.location.pathname);
             },
             onFinish: () => {
-                setData({ id: undefined, company_id: company.id, name: undefined, description: undefined, start_date: undefined, end_date: undefined });
+                resetForm();
             },
         });
     };
@@ -172,117 +180,108 @@ export default function Company({ company, flash }) {
 
                 {/* Projects */}
                 <main className="flex-1 bg-white border-l rounded pl-5">
-
                     <Accordion>
-
                         <AccordionItem title="Projects" defaultOpen>
-                            <div className="flex items-center justify-between mb-4">
-                                <div>
-                                    <p className="mt-1 text-sm text-gray-600">
-                                        Here are the projects that belong to this company.
-                                    </p>
-                                </div>
+                            <AccordionHeader>
+                                <span className="text-xl font-semibold">Projects</span>
+                                <p className="mt-1 text-sm text-gray-600">
+                                    View and manage your company's projects.
+                                </p>
+                            </AccordionHeader>
 
-                                <PrimaryButton
-                                    onClick={openCreateProjectModal}
-                                    disabled={processing}
-                                >
-                                    + Create Project
-                                </PrimaryButton>
-                            </div>
-
-                            {isLoading ? (
-                                <div className="flex flex-col justify-center items-center space-y-2 py-10">
-                                    <div className="w-8 h-8 border-4 border-indigo-500 border-dashed rounded-full animate-spin"></div>
-                                    <span className="text-gray-600">Loading projects...</span>
-                                </div>
-                            ) : error ? (
-                                <div className="text-red-500 text-center py-10">
-                                    {error}
-                                </div>
-                            ) : projects.length > 0 ? (
-                                <Table
-                                    columns={[
-                                        { key: 'name', label: 'Project Name' },
-                                        { key: 'description', label: 'Project Description' },
-                                        { key: 'start_date', label: 'Start Date' },
-                                        { key: 'end_date', label: 'End Date' },
-                                        { key: 'actions', label: 'Actions', align: 'right' },
-                                    ]}
-                                    data={projects}
-                                    renderRow={(project) => (
-                                        <tr key={project.id}>
-                                            <td className="px-6 py-4 whitespace-nowrap text-gray-800 font-medium">
-                                                <button
-                                                    type="button"
-                                                    className="text-indigo-500 font-bold hover:underline"
-                                                    onClick={(e) => handleShowProject(e, project.id)}
-                                                    disabled={processing}
-                                                >
-                                                    {project.name ?? '--'}
-                                                </button>
-                                            </td>
-
-                                            <td className="px-6 py-4 whitespace-nowrap text-gray-800 font-medium">
-                                                {project.description ?? '--'}
-                                            </td>
-
-                                            <td className="px-6 py-4 whitespace-nowrap text-gray-800 font-medium">
-                                                {project.start_date ?? '--'}
-                                            </td>
-
-                                            <td className="px-6 py-4 whitespace-nowrap text-gray-800 font-medium">
-                                                {project.end_date ?? '--'}
-                                            </td>
-
-                                            <td className="px-6 py-4 whitespace-nowrap text-gray-800 font-medium">
-                                                <div className="flex justify-end gap-3">
-                                                    <SecondaryButton
-                                                        disabled={processing}
-                                                        onClick={() => openEditProjectModal(project)}
-                                                    >
-                                                        Edit
-                                                    </SecondaryButton>
-                                                    <DangerButton
-                                                        className="!p-2.5"
-                                                        disabled={processing}
-                                                        onClick={(e) => handleDeleteProject(e, project.id)}
-                                                    >
-                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-4 h-4 fill-current">
-                                                            <path d="M 10.806641 2 C 10.289641 2 9.7956875 2.2043125 9.4296875 2.5703125 L 9 3 L 4 3 A 1.0001 1.0001 0 1 0 4 5 L 20 5 A 1.0001 1.0001 0 1 0 20 3 L 15 3 L 14.570312 2.5703125 C 14.205312 2.2043125 13.710359 2 13.193359 2 L 10.806641 2 z M 4.3652344 7 L 5.8925781 20.263672 C 6.0245781 21.253672 6.877 22 7.875 22 L 16.123047 22 C 17.121047 22 17.974422 21.254859 18.107422 20.255859 L 19.634766 7 L 4.3652344 7 z"></path>
-                                                        </svg>
-                                                    </DangerButton>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    )}
-                                />
-                            ) : (
-                                <div className="text-gray-600 text-center py-10 border-2 border-dashed rounded-lg">
-                                    No projects in this company yet. Click{' '}
-                                    <button
-                                        type="button"
+                            <AccordionContent>
+                                <div className="flex items-center justify-end mb-4">
+                                    <PrimaryButton
                                         onClick={openCreateProjectModal}
                                         disabled={processing}
-                                        className="text-indigo-500 font-medium hover:underline"
                                     >
-                                        here
-                                    </button>{' '}
-                                    to create one.
+                                        + Create Project
+                                    </PrimaryButton>
                                 </div>
-                            )}
-                        </AccordionItem>
 
-                        <AccordionItem title="Second Section">
-                            This is the content of the second section.
-                        </AccordionItem>
+                                {isLoading ? (
+                                    <div className="flex flex-col justify-center items-center space-y-2 py-10">
+                                        <div className="w-8 h-8 border-4 border-indigo-500 border-dashed rounded-full animate-spin"></div>
+                                        <span className="text-gray-600">Loading projects...</span>
+                                    </div>
+                                ) : error ? (
+                                    <div className="text-red-500 text-center py-10">
+                                        {error}
+                                    </div>
+                                ) : projects.length > 0 ? (
+                                    <Table
+                                        columns={[
+                                            { key: 'name', label: 'Project Name' },
+                                            { key: 'description', label: 'Project Description' },
+                                            { key: 'start_date', label: 'Start Date' },
+                                            { key: 'end_date', label: 'End Date' },
+                                            { key: 'actions', label: 'Actions', align: 'right' },
+                                        ]}
+                                        data={projects}
+                                        renderRow={(project) => (
+                                            <tr key={project.id}>
+                                                <td className="px-6 py-4 whitespace-nowrap text-gray-800 font-medium">
+                                                    <button
+                                                        type="button"
+                                                        className="text-indigo-500 font-bold hover:underline"
+                                                        onClick={(e) => handleShowProject(e, project.id)}
+                                                        disabled={processing}
+                                                    >
+                                                        {project.name ?? '--'}
+                                                    </button>
+                                                </td>
 
-                        <AccordionItem title="Third Section">
-                            This is the content of the third section.
-                        </AccordionItem>
+                                                <td className="px-6 py-4 whitespace-nowrap text-gray-800 font-medium">
+                                                    {project.description ?? '--'}
+                                                </td>
 
+                                                <td className="px-6 py-4 whitespace-nowrap text-gray-800 font-medium">
+                                                    {project.start_date ?? '--'}
+                                                </td>
+
+                                                <td className="px-6 py-4 whitespace-nowrap text-gray-800 font-medium">
+                                                    {project.end_date ?? '--'}
+                                                </td>
+
+                                                <td className="px-6 py-4 whitespace-nowrap text-gray-800 font-medium">
+                                                    <div className="flex justify-end gap-3">
+                                                        <SecondaryButton
+                                                            disabled={processing}
+                                                            onClick={() => openEditProjectModal(project)}
+                                                        >
+                                                            Edit
+                                                        </SecondaryButton>
+                                                        <DangerButton
+                                                            className="!p-2.5"
+                                                            disabled={processing}
+                                                            onClick={(e) => handleDeleteProject(e, project.id)}
+                                                        >
+                                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-4 h-4 fill-current">
+                                                                <path d="M 10.806641 2 C 10.289641 2 9.7956875 2.2043125 9.4296875 2.5703125 L 9 3 L 4 3 A 1.0001 1.0001 0 1 0 4 5 L 20 5 A 1.0001 1.0001 0 1 0 20 3 L 15 3 L 14.570312 2.5703125 C 14.205312 2.2043125 13.710359 2 13.193359 2 L 10.806641 2 z M 4.3652344 7 L 5.8925781 20.263672 C 6.0245781 21.253672 6.877 22 7.875 22 L 16.123047 22 C 17.121047 22 17.974422 21.254859 18.107422 20.255859 L 19.634766 7 L 4.3652344 7 z"></path>
+                                                            </svg>
+                                                        </DangerButton>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        )}
+                                    />
+                                ) : (
+                                    <div className="text-gray-600 text-center py-10 border-2 border-dashed rounded-lg">
+                                        No projects in this company yet. Click{' '}
+                                        <button
+                                            type="button"
+                                            onClick={openCreateProjectModal}
+                                            disabled={processing}
+                                            className="text-indigo-500 font-medium hover:underline"
+                                        >
+                                            here
+                                        </button>{' '}
+                                        to create one.
+                                    </div>
+                                )}
+                            </AccordionContent>
+                        </AccordionItem>
                     </Accordion>
-
                 </main>
             </div>
 

@@ -12,6 +12,12 @@ export default function Companies({ companies: initialCompanies = [], flash }) {
     const [createModalVisible, setCreateModalVisible] = useState(false);
     const [editModalVisible, setEditModalVisible] = useState(false);
 
+    // Form
+    const initialFormState = {
+        id: undefined,
+        name: undefined,
+    };
+
     const {
         data,
         setData,
@@ -21,15 +27,17 @@ export default function Companies({ companies: initialCompanies = [], flash }) {
         delete: destroy,
         processing,
         errors,
-    } = useForm({
-        id: undefined,
-        name: undefined,
-    });
+    } = useForm(initialFormState);
+
+    const resetForm = () => setData(initialFormState);
+
+
 
     const openCreateModal = (e) => {
         e.preventDefault();
 
-        setData({ id: undefined, name: undefined });
+        resetForm();
+
         setCreateModalVisible(true);
     };
 
@@ -41,7 +49,8 @@ export default function Companies({ companies: initialCompanies = [], flash }) {
     const handleShow = (e, companyId) => {
         e.preventDefault();
 
-        setData({ id: undefined, name: undefined });
+        resetForm();
+
         get(`/company/show/${companyId}`, {});
     };
 
@@ -54,7 +63,7 @@ export default function Companies({ companies: initialCompanies = [], flash }) {
                 setCreateModalVisible(false);
             },
             onFinish: () => {
-                setData({ id: undefined, name: undefined });
+                resetForm();
             },
         });
     };
@@ -68,7 +77,7 @@ export default function Companies({ companies: initialCompanies = [], flash }) {
                 setEditModalVisible(false);
             },
             onFinish: () => {
-                setData({ id: undefined, name: undefined });
+                resetForm();
             },
         });
     };
@@ -81,7 +90,7 @@ export default function Companies({ companies: initialCompanies = [], flash }) {
                 get(window.location.pathname);
             },
             onFinish: () => {
-                setData({ id: undefined, name: undefined });
+                resetForm();
             },
         });
     };
