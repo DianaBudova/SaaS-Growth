@@ -7,14 +7,12 @@ use App\Models\Company;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
-class CompanyProjectController extends Controller
+class CompanyController extends Controller
 {
-    public function get(int $id): JsonResponse
+    public function get(): JsonResponse
     {
-        $company = Company::with('projects')->findOrFail($id);
-
         return response()->json([
-            'result' => $company->projects,
+            'result' => Company::all()->toArray(),
         ]);
     }
 }

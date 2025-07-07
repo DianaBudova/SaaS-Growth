@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\Api\CompanyController;
 use App\Http\Controllers\Api\CompanyProjectController;
+use App\Http\Controllers\Api\ProjectController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -13,5 +15,9 @@ Route::middleware('auth:sanctum')->group(function () {
         return $request->user();
     });
 
+    Route::get('/companies', [CompanyController::class, 'get']);
+
     Route::get('/company/{id}/projects', [CompanyProjectController::class, 'get']);
+
+    Route::get('/projects', [ProjectController::class, 'get']);
 });

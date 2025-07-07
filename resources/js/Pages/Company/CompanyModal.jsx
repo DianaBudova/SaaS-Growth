@@ -17,38 +17,42 @@ export default function CompanyModal({
 }) {
     return (
         <Modal show={show} onClose={onClose} title={title}>
-            <form onSubmit={onSubmit}>
-                <InputLabel value="Company Name" />
-                <TextInput
-                    type="text"
-                    name="name"
-                    value={data.name ?? ''}
-                    onChange={(e) => setData('name', e.target.value)}
-                    className="w-full"
-                    placeholder="Company name"
-                    disabled={processing}
-                    isFocused
-                />
-                
-                {errors.name && (
-                    <div className="text-red-500 text-sm mt-1">{errors.name}</div>
-                )}
+            <Modal.Header title={title} onClose={onClose} />
 
-                <div className="flex justify-end mt-4 gap-2">
-                    <SecondaryButton
-                        type="button"
-                        onClick={onClose}
-                    >
-                        Cancel
-                    </SecondaryButton>
-                    <PrimaryButton
-                        type="submit"
+            <Modal.Content>
+                <form onSubmit={onSubmit}>
+                    <InputLabel value="Company Name" />
+                    <TextInput
+                        type="text"
+                        name="name"
+                        value={data.name ?? ''}
+                        onChange={(e) => setData('name', e.target.value)}
+                        className="w-full"
+                        placeholder="Company name"
                         disabled={processing}
-                    >
-                        {submitAction}
-                    </PrimaryButton>
-                </div>
-            </form>
+                        isFocused
+                    />
+                    
+                    {errors.name && (
+                        <div className="text-red-500 text-sm mt-1">{errors.name}</div>
+                    )}
+
+                    <Modal.Footer>
+                        <SecondaryButton
+                            type="button"
+                            onClick={onClose}
+                        >
+                            Cancel
+                        </SecondaryButton>
+                        <PrimaryButton
+                            type="submit"
+                            disabled={processing}
+                        >
+                            {submitAction}
+                        </PrimaryButton>
+                    </Modal.Footer>
+                </form>
+            </Modal.Content>
         </Modal>
     );
 }

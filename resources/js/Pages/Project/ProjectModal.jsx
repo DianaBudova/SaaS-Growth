@@ -1,8 +1,11 @@
+import Dropdown from '@/Components/Dropdown';
 import InputLabel from '@/Components/InputLabel';
 import Modal from '@/Components/Modal';
 import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton from '@/Components/SecondaryButton';
 import TextInput from '@/Components/TextInput';
+import { fetchAPI } from '@/helpers';
+import { useEffect, useState } from 'react';
 
 export default function ProjectModal({
     data,
@@ -13,85 +16,117 @@ export default function ProjectModal({
     onSubmit,
     show,
     title,
-    submitAction
+    submitAction,
+    strictCompany = false
 }) {
+    const [companies, setCompanies] = useState([]);
+
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchCompanies = async () => {
+            fetchAPI(`/api/companies`)
+                .then(setCompanies)
+                .catch((err) => setError(err.response?.data?.message ?? err.message))
+                .finally(() => setIsLoading(false));
+        };
+
+        fetchCompanies();
+    }, []);
+
     return (
-        <Modal show={show} onClose={onClose} title={title}>
-            <form onSubmit={onSubmit}>
-                <div className="flex flex-col gap-4">
-                    <div>
-                        <InputLabel value="Project Name" />
-                        <TextInput
-                            type="text"
-                            name="name"
-                            value={data.name ?? ''}
-                            onChange={(e) => setData('name', e.target.value)}
-                            className="w-full"
-                            placeholder="Project name"
-                            disabled={processing}
-                            isFocused
-                        />
+        <Modal show={show} onClose={onClose}>
+            <Modal.Header title={title} onClose={onClose} />
 
-                        {errors.name && (
-                            <div className="text-red-500 text-sm mt-1">{errors.name}</div>
-                        )}
+            <Modal.Content>
+                <form onSubmit={onSubmit}>
+                    <div className="flex flex-col gap-4">
+                        <div>
+                            <InputLabel value="Project Name" />
+                            <TextInput
+                                type="text"
+                                name="name"
+                                value={data.name ?? ''}
+                                onChange={(e) => setData('name', e.target.value)}
+                                className="w-full"
+                                placeholder="Project name"
+                                disabled={processing}
+                                isFocused
+                            />
+                            {errors.name && (
+                                <div className="text-red-500 text-sm mt-1">{errors.name}</div>
+                            )}
+                        </div>
+
+                        <div>
+                            <InputLabel value="Project Description" />
+                            <TextInput
+                                type="text"
+                                name="description"
+                                value={data.description ?? ''}
+                                onChange={(e) => setData('description', e.target.value)}
+                                className="w-full"
+                                placeholder="Project description"
+                                disabled={processing}
+                            />
+                        </div>
+
+                        <div>
+                            <InputLabel value="Start Date" />
+                            <TextInput
+                                type="date"
+                                name="start_date"
+                                value={data.start_date ?? ''}
+                                onChange={(e) => setData('start_date', e.target.value)}
+                                className="w-full"
+                                disabled={processing}
+                            />
+                        </div>
+
+                        <div>
+                            <InputLabel value="End Date" />
+                            <TextInput
+                                type="date"
+                                name="end_date"
+                                value={data.end_date ?? ''}
+                                onChange={(e) => setData('end_date', e.target.value)}
+                                className="w-full"
+                                disabled={processing}
+                            />
+                        </div>
+
+                        <div>
+                            <InputLabel value="Associated Company" />
+                            <Dropdown
+                                name="company_id"
+                                options={companies}
+                                value={data.company_id ?? ''}
+                                onChange={(e) => setData('company_id', e.target.value)}
+                                className="w-full"
+                                placeholder={strictCompany ? "--" : "Select Associated Company"}
+                                disabled={processing || strictCompany}
+                                loading={isLoading}
+                            />
+                        </div>
                     </div>
 
-                    <div>
-                        <InputLabel value="Project Description" />
-                        <TextInput
-                            type="text"
-                            name="description"
-                            value={data.description ?? ''}
-                            onChange={(e) => setData('description', e.target.value)}
-                            className="w-full"
-                            placeholder="Project description"
+                    <Modal.Footer>
+                        <SecondaryButton
+                            type="button"
+                            onClick={onClose}
+                        >
+                            Cancel
+                        </SecondaryButton>
+                        <PrimaryButton
+                            type="submit"
                             disabled={processing}
-                        />
-                    </div>
-
-                    <div>
-                        <InputLabel value="Start Date" />
-                        <TextInput
-                            type="date"
-                            name="start_date"
-                            value={data.start_date ?? ''}
-                            onChange={(e) => setData('start_date', e.target.value)}
-                            className="w-full"
-                            placeholder="Start date"
-                            disabled={processing}
-                        />
-                    </div>
-
-                    <div>
-                        <InputLabel value="End Date" />
-                        <TextInput
-                            type="date"
-                            name="end_date"
-                            value={data.end_date ?? ''}
-                            onChange={(e) => setData('end_date', e.target.value)}
-                            className="w-full"
-                            placeholder="End date"
-                            disabled={processing}
-                        />
-                    </div>
-                </div>
-
-                <div className="flex justify-end mt-4 gap-2">
-                    <SecondaryButton
-                        type="button"
-                        onClick={onClose}
-                    >
-                        Cancel
-                    </SecondaryButton>
-                    <PrimaryButton
-                        type="submit"
-                        disabled={processing}
-                    >
-                        {submitAction}
-                    </PrimaryButton>
-                </div>
-            </form>
+                        >
+                            {submitAction}
+                        </PrimaryButton>
+                    </Modal.Footer>
+                </form>
+            </Modal.Content>
         </Modal>
     );
 }

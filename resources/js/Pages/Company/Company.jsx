@@ -8,9 +8,8 @@ import Table from '@/Components/Table';
 import SecondaryButton from '@/Components/SecondaryButton';
 import DangerButton from '@/Components/DangerButton';
 import Accordion from '@/Components/Accordion';
-import { AccordionItem } from '@/Components/AccordionItem';
-import AccordionHeader from '@/Components/AccordionHeader';
-import AccordionContent from '@/Components/AccordionContent';
+import { fetchAPI } from '@/helpers';
+import ResourceSidebar from '@/Components/ResourceSidebar';
 
 export default function Company({ company, flash }) {
     // States
@@ -19,13 +18,19 @@ export default function Company({ company, flash }) {
     const [createProjectModalVisible, setCreateProjectModalVisible] = useState(false);
     const [editProjectModalVisible, setEditProjectModalVisible] = useState(false);
 
+    const [reload, setReload] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
 
 
-    // Form
-    const initialFormState = {
+    // Forms
+    const initialCompanyFormState = {
+        id: company.id,
+        name: company.name
+    };
+
+    const initialProjectFormState = {
         id: undefined,
         company_id: company.id,
         name: undefined,
@@ -43,33 +48,25 @@ export default function Company({ company, flash }) {
         delete: destroy,
         processing,
         errors,
-    } = useForm(initialFormState);
+    } = useForm(initialProjectFormState);
 
-    const resetForm = () => setData(initialFormState);
+    // Form Resets
+    const resetCompanyForm = () => setData(initialCompanyFormState);
+    const resetProjectForm = () => setData(initialProjectFormState);
 
 
 
     // Effects
     useEffect(() => {
         const fetchProjects = async () => {
-            try {
-                await axios.get('/sanctum/csrf-cookie', { withCredentials: true });
-
-                const res = await axios.get(`/api/company/${company.id}/projects`, {
-                    withCredentials: true,
-                    headers: { 'Accept': 'application/json' },
-                });
-
-                setProjects(res.data.projects);
-            } catch (err) {
-                setError(err.response?.data?.message || err.message);
-            } finally {
-                setIsLoading(false);
-            }
+            fetchAPI(`/api/company/${company.id}/projects`)
+                .then(setProjects)
+                .catch((err) => setError(err.response?.data?.message ?? err.message))
+                .finally(() => setIsLoading(false));
         };
 
         fetchProjects();
-    }, []);
+    }, [reload]);
 
 
 
@@ -79,7 +76,7 @@ export default function Company({ company, flash }) {
     const openCreateProjectModal = (e) => {
         e.preventDefault();
 
-        resetForm();
+        resetProjectForm();
 
         setCreateProjectModalVisible(true);
     };
@@ -89,11 +86,11 @@ export default function Company({ company, flash }) {
 
         post('/project/create', {
             onSuccess: () => {
-                get(window.location.pathname);
+                setReload(!reload);
                 setCreateProjectModalVisible(false);
             },
             onFinish: () => {
-                resetForm();
+                resetProjectForm();
             },
         });
     };
@@ -111,11 +108,11 @@ export default function Company({ company, flash }) {
 
         put(`/project/update/${data.id}`, {
             onSuccess: () => {
-                get(window.location.pathname);
+                setReload(!reload);
                 setEditProjectModalVisible(false);
             },
             onFinish: () => {
-                resetForm();
+                resetProjectForm();
             },
         });
     };
@@ -126,7 +123,7 @@ export default function Company({ company, flash }) {
     const handleShowProject = (e, projectId) => {
         e.preventDefault();
 
-        resetForm();
+        resetProjectForm();
 
         get(`/project/show/${projectId}`, {});
     };
@@ -139,10 +136,10 @@ export default function Company({ company, flash }) {
 
         destroy(`/project/delete/${projectId}`, {
             onSuccess: () => {
-                get(window.location.pathname);
+                setReload(!reload);
             },
             onFinish: () => {
-                resetForm();
+                resetProjectForm();
             },
         });
     };
@@ -153,43 +150,29 @@ export default function Company({ company, flash }) {
         <AuthenticatedLayout>
             <FlashMessage message={flash?.success} />
 
-            <div className="flex flex-col lg:flex-row">
-                {/* Sidebar */}
-                <aside className="w-full lg:w-1/4 bg-white rounded">
-                    <h1 className="text-xl font-semibold text-gray-900 mb-2">{company.name}</h1>
-                    <p className="text-sm text-gray-600 mb-4">
-                        Company ID:{' '}
-                        <span className="font-mono text-blue-600">{company.id}</span>
-                    </p>
-
-                    <div className="border-t border-gray-200 pt-4 mt-4 space-y-2 text-sm">
-                        <p>
-                            <span className="font-medium text-gray-700">Owner:</span>{' '}
-                            {company.owner_id ?? 'N/A'}
-                        </p>
-                        <p>
-                            <span className="font-medium text-gray-700">Created:</span>{' '}
-                            {new Date(company.created_at).toLocaleDateString()}
-                        </p>
-                        <p>
-                            <span className="font-medium text-gray-700">Updated:</span>{' '}
-                            {new Date(company.updated_at).toLocaleDateString()}
-                        </p>
-                    </div>
-                </aside>
+            <div className="flex flex-col lg:flex-row h-full">
+                <ResourceSidebar
+                    title={company.name}
+                    meta={[
+                        { label: 'Company ID', value: company.id },
+                        { label: 'Owner ID',   value: company.owner_id },
+                        { label: 'Created',    value: new Date(company.created_at).toLocaleDateString() },
+                        { label: 'Updated',    value: new Date(company.updated_at).toLocaleDateString() },
+                    ]}
+                />
 
                 {/* Projects */}
                 <main className="flex-1 bg-white border-l rounded pl-5">
                     <Accordion>
-                        <AccordionItem title="Projects" defaultOpen>
-                            <AccordionHeader>
+                        <Accordion.Item title="Projects" defaultOpen>
+                            <Accordion.Item.Header>
                                 <span className="text-xl font-semibold">Projects</span>
                                 <p className="mt-1 text-sm text-gray-600">
                                     View and manage your company's projects.
                                 </p>
-                            </AccordionHeader>
+                            </Accordion.Item.Header>
 
-                            <AccordionContent>
+                            <Accordion.Item.Content>
                                 <div className="flex items-center justify-end mb-4">
                                     <PrimaryButton
                                         onClick={openCreateProjectModal}
@@ -279,8 +262,8 @@ export default function Company({ company, flash }) {
                                         to create one.
                                     </div>
                                 )}
-                            </AccordionContent>
-                        </AccordionItem>
+                            </Accordion.Item.Content>
+                        </Accordion.Item>
                     </Accordion>
                 </main>
             </div>
@@ -296,6 +279,7 @@ export default function Company({ company, flash }) {
                     onSubmit={handleCreateProject}
                     title="Create Project"
                     submitAction="Create"
+                    strictCompany
                 />
             )}
 
@@ -310,6 +294,7 @@ export default function Company({ company, flash }) {
                     onSubmit={handleUpdateProject}
                     title="Update Project"
                     submitAction="Update"
+                    strictCompany
                 />
             )}
         </AuthenticatedLayout>

@@ -1,6 +1,5 @@
 import { Inertia } from '@inertiajs/inertia';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
-import ContentContainer from '@/Components/ContentContainer';
 import HeaderContainer from '@/Components/HeaderContainer';
 import HeaderItem from '@/Components/HeaderItem';
 
@@ -36,9 +35,9 @@ export default function AuthenticatedLayout({ children }) {
                     </HeaderItem>
                 </HeaderContainer>
 
-                <ContentContainer>
+                <div className="flex-1 overflow-auto bg-white p-6 shadow">
                     {children}
-                </ContentContainer>
+                </div>
             </div>
         </div>
     );

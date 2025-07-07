@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import FlashMessage from '@/Components/FlashMessage';
@@ -6,9 +6,16 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton from '@/Components/SecondaryButton';
 import DangerButton from '@/Components/DangerButton';
 import Table from '@/Components/Table';
-import ProjectModal from './NonassociatedProjectModal';
+import ProjectModal from './ProjectModal';
+import { fetchAPI } from '@/helpers';
 
 export default function Projects({ projects: initialProjects = [], flash }) {
+    const [projects, setProjects] = useState(initialProjects);
+
+    const [reload, setReload] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
+
     const [createModalVisible, setCreateModalVisible] = useState(false);
     const [editModalVisible, setEditModalVisible] = useState(false);
 
@@ -37,6 +44,20 @@ export default function Projects({ projects: initialProjects = [], flash }) {
 
 
 
+    // Effects
+    useEffect(() => {
+        const fetchProjects = async () => {
+            fetchAPI(`/api/projects`)
+                .then(setProjects)
+                .catch((err) => setError(err.response?.data?.message ?? err.message))
+                .finally(() => setIsLoading(false));
+        };
+
+        fetchProjects();
+    }, [reload]);
+
+
+
     const openCreateModal = (e) => {
         e.preventDefault();
 
@@ -46,7 +67,7 @@ export default function Projects({ projects: initialProjects = [], flash }) {
     };
 
     const openEditModal = (project) => {
-        setData({ id: project.id, name: project.name });
+        setData({ id: project.id, company_id: project.company_id, name: project.name, description: project.description, start_date: project.start_date, end_date: project.end_date });
         setEditModalVisible(true);
     };
 
@@ -63,7 +84,7 @@ export default function Projects({ projects: initialProjects = [], flash }) {
 
         post('/project/create', {
             onSuccess: () => {
-                get(window.location.pathname);
+                setReload(!reload);
                 setCreateModalVisible(false);
             },
             onFinish: () => {
@@ -77,7 +98,7 @@ export default function Projects({ projects: initialProjects = [], flash }) {
 
         put(`/project/update/${data.id}`, {
             onSuccess: () => {
-                get(window.location.pathname);
+                setReload(!reload);
                 setEditModalVisible(false);
             },
             onFinish: () => {
@@ -91,7 +112,7 @@ export default function Projects({ projects: initialProjects = [], flash }) {
 
         destroy(`/project/delete/${projectId}`, {
             onSuccess: () => {
-                get(window.location.pathname);
+                setReload(!reload);
             },
             onFinish: () => {
                 resetForm();
@@ -116,16 +137,25 @@ export default function Projects({ projects: initialProjects = [], flash }) {
                 </PrimaryButton>
             </div>
 
-            {initialProjects.length > 0 ? (
+            {isLoading ? (
+                <div className="flex flex-col justify-center items-center space-y-2 py-10">
+                    <div className="w-8 h-8 border-4 border-indigo-500 border-dashed rounded-full animate-spin"></div>
+                    <span className="text-gray-600">Loading projects...</span>
+                </div>
+            ) : error ? (
+                <div className="text-red-500 text-center py-10">
+                    {error}
+                </div>
+            ) : projects.length > 0 ? (
                 <Table
                     columns={[
                         { key: 'name', label: 'Project Name' },
-                        { key: 'name', label: 'Project Description' },
-                        { key: 'name', label: 'Start Date' },
-                        { key: 'name', label: 'End Date' },
+                        { key: 'description', label: 'Project Description' },
+                        { key: 'start_date', label: 'Start Date' },
+                        { key: 'end_date', label: 'End Date' },
                         { key: 'actions', label: 'Actions', align: 'right' },
                     ]}
-                    data={initialProjects}
+                    data={projects}
                     renderRow={(project) => (
                         <tr key={project.id}>
                             <td className="px-6 py-4 whitespace-nowrap text-gray-800 font-medium">
@@ -138,6 +168,19 @@ export default function Projects({ projects: initialProjects = [], flash }) {
                                     {project.name}
                                 </button>
                             </td>
+
+                            <td className="px-6 py-4 whitespace-nowrap text-gray-800 font-medium">
+                                {project.description ?? '--'}
+                            </td>
+
+                            <td className="px-6 py-4 whitespace-nowrap text-gray-800 font-medium">
+                                {project.start_date ?? '--'}
+                            </td>
+
+                            <td className="px-6 py-4 whitespace-nowrap text-gray-800 font-medium">
+                                {project.end_date ?? '--'}
+                            </td>
+
                             <td className="px-6 py-4 whitespace-nowrap text-gray-800 font-medium">
                                 <div className="flex justify-end gap-3">
                                     <SecondaryButton
@@ -200,6 +243,7 @@ export default function Projects({ projects: initialProjects = [], flash }) {
                     onSubmit={handleUpdate}
                     title="Update Project"
                     submitAction="Update"
+                    strictCompany
                 />
             )}
         </AuthenticatedLayout>
