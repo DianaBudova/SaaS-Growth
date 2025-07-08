@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Company;
 use App\Http\Requests\Company\CompanyCreateRequest;
-use App\Http\Requests\Company\CompanyDestroyRequest;
 use App\Http\Requests\Company\CompanyUpdateRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;

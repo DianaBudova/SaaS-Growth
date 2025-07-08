@@ -15,4 +15,13 @@ class CompanyController extends Controller
             'result' => Company::all()->toArray(),
         ]);
     }
+
+    public function getProjects(int $id): JsonResponse
+    {
+        $company = Company::with('projects')->findOrFail($id);
+
+        return response()->json([
+            'result' => $company->projects,
+        ]);
+    }
 }

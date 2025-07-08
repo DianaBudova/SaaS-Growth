@@ -15,4 +15,13 @@ class ProjectController extends Controller
             'result' => Project::all()->toArray(),
         ]);
     }
+
+    public function getMembers(int $id): JsonResponse
+    {
+        $project = Project::with('users')->findOrFail($id);
+
+        return response()->json([
+            'result' => $project->users,
+        ]);
+    }
 }

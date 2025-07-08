@@ -6,7 +6,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton from '@/Components/SecondaryButton';
 import DangerButton from '@/Components/DangerButton';
 import Table from '@/Components/Table';
-import CompanyModal from './CompanyModal';
+import CompanyModal from '@/Components/Modals/CompanyModal';
 import { fetchAPI } from '@/helpers';
 
 export default function Companies({ companies: initialCompanies = [], flash }) {
@@ -43,7 +43,7 @@ export default function Companies({ companies: initialCompanies = [], flash }) {
     // Effects
     useEffect(() => {
         const fetchCompanies = async () => {
-            fetchAPI(`/api/companies`)
+            fetchAPI(`/v1/companies`)
                 .then(setCompanies)
                 .catch((err) => setError(err.response?.data?.message ?? err.message))
                 .finally(() => setIsLoading(false));
@@ -72,13 +72,13 @@ export default function Companies({ companies: initialCompanies = [], flash }) {
 
         resetForm();
 
-        get(`/company/show/${companyId}`, {});
+        get(`/company/${companyId}`, {});
     };
 
     const handleCreate = (e) => {
         e.preventDefault();
 
-        post('/company/create', {
+        post('/company', {
             onSuccess: () => {
                 setReload(!reload);
                 setCreateModalVisible(false);
@@ -92,7 +92,7 @@ export default function Companies({ companies: initialCompanies = [], flash }) {
     const handleUpdate = (e) => {
         e.preventDefault();
 
-        put(`/company/update/${data.id}`, {
+        put(`/company/${data.id}`, {
             onSuccess: () => {
                 setReload(!reload);
                 setEditModalVisible(false);
@@ -106,7 +106,7 @@ export default function Companies({ companies: initialCompanies = [], flash }) {
     const handleDelete = (e, companyId) => {
         e.preventDefault();
 
-        destroy(`/company/delete/${companyId}`, {
+        destroy(`/company/${companyId}`, {
             onSuccess: () => {
                 setReload(!reload);
             },
@@ -136,7 +136,7 @@ export default function Companies({ companies: initialCompanies = [], flash }) {
             {isLoading ? (
                 <div className="flex flex-col justify-center items-center space-y-2 py-10">
                     <div className="w-8 h-8 border-4 border-indigo-500 border-dashed rounded-full animate-spin"></div>
-                    <span className="text-gray-600">Loading projects...</span>
+                    <span className="text-gray-600">Loading companies...</span>
                 </div>
             ) : error ? (
                 <div className="text-red-500 text-center py-10">

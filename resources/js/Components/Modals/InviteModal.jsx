@@ -4,7 +4,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton from '@/Components/SecondaryButton';
 import TextInput from '@/Components/TextInput';
 
-export default function CompanyModal({
+export default function InviteModal({
     data,
     setData,
     errors,
@@ -16,26 +16,29 @@ export default function CompanyModal({
     submitAction
 }) {
     return (
-        <Modal show={show} onClose={onClose} title={title}>
+        <Modal show={show} onClose={onClose}>
             <Modal.Header title={title} onClose={onClose} />
 
             <Modal.Content>
                 <form onSubmit={onSubmit}>
-                    <InputLabel value="Company Name" />
-                    <TextInput
-                        type="text"
-                        name="name"
-                        value={data.name ?? ''}
-                        onChange={(e) => setData('name', e.target.value)}
-                        className="w-full"
-                        placeholder="Company name"
-                        disabled={processing}
-                        isFocused
-                    />
-                    
-                    {errors.name && (
-                        <div className="text-red-500 text-sm mt-1">{errors.name}</div>
-                    )}
+                    <div className="flex flex-col gap-4">
+                        <div>
+                            <InputLabel value="User Email" />
+                            <TextInput
+                                type="email"
+                                name="email"
+                                value={data.email ?? ''}
+                                onChange={(e) => setData('email', e.target.value)}
+                                className="w-full"
+                                placeholder="User email"
+                                disabled={processing}
+                                isFocused
+                            />
+                            {errors.email && (
+                                <div className="text-red-500 text-sm mt-1">{errors.email}</div>
+                            )}
+                        </div>
+                    </div>
 
                     <Modal.Footer>
                         <SecondaryButton
@@ -47,6 +50,7 @@ export default function CompanyModal({
                         <PrimaryButton
                             type="submit"
                             disabled={processing}
+                            loading={processing}
                         >
                             {submitAction}
                         </PrimaryButton>

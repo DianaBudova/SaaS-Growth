@@ -6,7 +6,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton from '@/Components/SecondaryButton';
 import DangerButton from '@/Components/DangerButton';
 import Table from '@/Components/Table';
-import ProjectModal from './ProjectModal';
+import ProjectModal from '@/Components/Modals/ProjectModal';
 import { fetchAPI } from '@/helpers';
 
 export default function Projects({ projects: initialProjects = [], flash }) {
@@ -47,7 +47,7 @@ export default function Projects({ projects: initialProjects = [], flash }) {
     // Effects
     useEffect(() => {
         const fetchProjects = async () => {
-            fetchAPI(`/api/projects`)
+            fetchAPI(`/v1/projects`)
                 .then(setProjects)
                 .catch((err) => setError(err.response?.data?.message ?? err.message))
                 .finally(() => setIsLoading(false));
@@ -76,13 +76,13 @@ export default function Projects({ projects: initialProjects = [], flash }) {
 
         resetForm();
 
-        get(`/project/show/${projectId}`, {});
+        get(`/project/${projectId}`, {});
     };
 
     const handleCreate = (e) => {
         e.preventDefault();
 
-        post('/project/create', {
+        post('/project', {
             onSuccess: () => {
                 setReload(!reload);
                 setCreateModalVisible(false);
@@ -96,7 +96,7 @@ export default function Projects({ projects: initialProjects = [], flash }) {
     const handleUpdate = (e) => {
         e.preventDefault();
 
-        put(`/project/update/${data.id}`, {
+        put(`/project/${data.id}`, {
             onSuccess: () => {
                 setReload(!reload);
                 setEditModalVisible(false);
@@ -110,7 +110,7 @@ export default function Projects({ projects: initialProjects = [], flash }) {
     const handleDelete = (e, projectId) => {
         e.preventDefault();
 
-        destroy(`/project/delete/${projectId}`, {
+        destroy(`/project/${projectId}`, {
             onSuccess: () => {
                 setReload(!reload);
             },

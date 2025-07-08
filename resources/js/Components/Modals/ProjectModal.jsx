@@ -26,7 +26,7 @@ export default function ProjectModal({
 
     useEffect(() => {
         const fetchCompanies = async () => {
-            fetchAPI(`/api/companies`)
+            fetchAPI(`/v1/companies`)
                 .then(setCompanies)
                 .catch((err) => setError(err.response?.data?.message ?? err.message))
                 .finally(() => setIsLoading(false));
@@ -70,6 +70,9 @@ export default function ProjectModal({
                                 placeholder="Project description"
                                 disabled={processing}
                             />
+                            {errors.description && (
+                                <div className="text-red-500 text-sm mt-1">{errors.description}</div>
+                            )}
                         </div>
 
                         <div>
@@ -82,6 +85,9 @@ export default function ProjectModal({
                                 className="w-full"
                                 disabled={processing}
                             />
+                            {errors.start_date && (
+                                <div className="text-red-500 text-sm mt-1">{errors.start_date}</div>
+                            )}
                         </div>
 
                         <div>
@@ -94,6 +100,9 @@ export default function ProjectModal({
                                 className="w-full"
                                 disabled={processing}
                             />
+                            {errors.end_date && (
+                                <div className="text-red-500 text-sm mt-1">{errors.end_date}</div>
+                            )}
                         </div>
 
                         <div>
@@ -108,6 +117,9 @@ export default function ProjectModal({
                                 disabled={processing || strictCompany}
                                 loading={isLoading}
                             />
+                            {errors.company_id && (
+                                <div className="text-red-500 text-sm mt-1">{errors.company_id}</div>
+                            )}
                         </div>
                     </div>
 
@@ -121,6 +133,7 @@ export default function ProjectModal({
                         <PrimaryButton
                             type="submit"
                             disabled={processing}
+                            loading={processing}
                         >
                             {submitAction}
                         </PrimaryButton>

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useForm } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import FlashMessage from '@/Components/FlashMessage';
-import ProjectModal from '@/Pages/Project/ProjectModal';
+import ProjectModal from '@/Components/Modals/ProjectModal';
 import PrimaryButton from '@/Components/PrimaryButton';
 import Table from '@/Components/Table';
 import SecondaryButton from '@/Components/SecondaryButton';
@@ -59,7 +59,7 @@ export default function Company({ company, flash }) {
     // Effects
     useEffect(() => {
         const fetchProjects = async () => {
-            fetchAPI(`/api/company/${company.id}/projects`)
+            fetchAPI(`/v1/companies/${company.id}/projects`)
                 .then(setProjects)
                 .catch((err) => setError(err.response?.data?.message ?? err.message))
                 .finally(() => setIsLoading(false));
@@ -84,7 +84,7 @@ export default function Company({ company, flash }) {
     const handleCreateProject = (e) => {
         e.preventDefault();
 
-        post('/project/create', {
+        post('/project', {
             onSuccess: () => {
                 setReload(!reload);
                 setCreateProjectModalVisible(false);
@@ -106,7 +106,7 @@ export default function Company({ company, flash }) {
     const handleUpdateProject = (e) => {
         e.preventDefault();
 
-        put(`/project/update/${data.id}`, {
+        put(`/project/${data.id}`, {
             onSuccess: () => {
                 setReload(!reload);
                 setEditProjectModalVisible(false);
@@ -125,7 +125,7 @@ export default function Company({ company, flash }) {
 
         resetProjectForm();
 
-        get(`/project/show/${projectId}`, {});
+        get(`/project/${projectId}`, {});
     };
 
 
@@ -134,7 +134,7 @@ export default function Company({ company, flash }) {
     const handleDeleteProject = (e, projectId) => {
         e.preventDefault();
 
-        destroy(`/project/delete/${projectId}`, {
+        destroy(`/project/${projectId}`, {
             onSuccess: () => {
                 setReload(!reload);
             },
@@ -161,10 +161,9 @@ export default function Company({ company, flash }) {
                     ]}
                 />
 
-                {/* Projects */}
                 <main className="flex-1 bg-white border-l rounded pl-5">
                     <Accordion>
-                        <Accordion.Item title="Projects" defaultOpen>
+                        <Accordion.Item defaultOpen>
                             <Accordion.Item.Header>
                                 <span className="text-xl font-semibold">Projects</span>
                                 <p className="mt-1 text-sm text-gray-600">

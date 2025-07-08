@@ -1,5 +1,6 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import LoadingSpinner from './LoadingSpinner';
 
 export default forwardRef(function Dropdown(
     {
@@ -76,7 +77,7 @@ export default forwardRef(function Dropdown(
                 }
             >
                 {loading ? (
-                    <div className="w-6 h-6 border-2 border-indigo-500 border-dashed rounded-full animate-spin"></div>
+                    <LoadingSpinner />
                 ) : 
                     <>
                         {selectedOption?.name || placeholder}
@@ -94,7 +95,6 @@ export default forwardRef(function Dropdown(
                         </svg>
                     </>
                 }
-                
             </button>
 
             {isOpen &&
