@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Invitation;
 use App\Services\InvitationService;
 use App\Http\Requests\InviteRequest;
 use App\Http\Controllers\Controller;
@@ -25,22 +26,29 @@ class InvitationController extends Controller
         }
     }
 
-    public function accept(string $token)
+    public function accept(string $token, InvitationService $inviter): RedirectResponse
     {
         $invitation = Invitation::where('token', $token)->firstOrFail();
 
         if ($invitation->accepted) {
-            return redirect()->route('login')->with('info', 'Invitation already accepted.');
+            return redirect()->route('project.show', $invitation->project_id)->with('info', 'Invitation already accepted.');
         }
 
-        // Можеш тут зареєструвати або залогінити користувача
-        // або перенаправити на форму реєстрації з переданим токеном
+        if (!auth()->check()) {
+            session(['invitation_token' => $token]);
+            return redirect()->route('register')->with('info', 'Please register or login to accept the invitation.');
+        }
 
-        $invitation->update(['accepted' => true]);
+        if (auth()->user()->email !== $invitation->email) {
+            auth()->logout();
+            session()->invalidate();
+            session()->regenerateToken();
 
-        // Додай користувача до проєкту:
-        $user = auth()->user();
-        $invitation->project->users()->attach($user->id);
+            session(['invitation_token' => $token]);
+            return redirect()->route('register')->with('error', 'This invitation is not for your email. Please use the email ' . $invitation->email . '.');
+        }
+
+        $invitation = $inviter->acceptWithUser($token, auth()->user());
 
         return redirect()->route('project.show', $invitation->project_id)->with('success', 'You have joined the project!');
     }

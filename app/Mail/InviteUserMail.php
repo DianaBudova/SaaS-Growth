@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Models\Invitation;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -13,7 +14,7 @@ class InviteUserMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public string $email;
+    public Invitation $invitation;
 
     public function __construct(Invitation $invitation)
     {
@@ -38,7 +39,7 @@ class InviteUserMail extends Mailable
         return new Content(
             markdown: 'emails.invite-user',
             with: [
-                'acceptUrl' => route('invitations.accept', $this->invitation->token)
+                'acceptUrl' => route('invitation.accept', $this->invitation->token)
             ]
         );
     }
