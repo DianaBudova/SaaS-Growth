@@ -1,6 +1,9 @@
+import LoadingSpinner from "./LoadingSpinner";
+
 export default function PrimaryButton({
     className = '',
-    disabled,
+    disabled = false,
+    loading = false,
     children,
     ...props
 }) {
@@ -12,9 +15,13 @@ export default function PrimaryButton({
                     disabled && 'opacity-25'
                 } ` + className
             }
-            disabled={disabled}
+            disabled={disabled || loading}
         >
-            {children}
+            {loading ? (
+                <div className="flex items-center justify-center w-full h-full">
+                    <LoadingSpinner className="!w-4 !h-4 border-white" />
+                </div>
+            ) : children}
         </button>
     );
 }

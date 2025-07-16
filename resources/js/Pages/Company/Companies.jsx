@@ -1,35 +1,60 @@
-import { useState } from 'react';
-import { useForm, Link } from '@inertiajs/react';
+import { useEffect, useState } from 'react';
+import { router, useForm } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import FlashMessage from '@/Components/FlashMessage';
 import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton from '@/Components/SecondaryButton';
 import DangerButton from '@/Components/DangerButton';
 import Table from '@/Components/Table';
-import CompanyModal from './CompanyModal';
+import CompanyModal from '@/Components/Modals/CompanyModal';
+import { fetchAPI } from '@/helpers';
 
 export default function Companies({ companies: initialCompanies = [], flash }) {
+    const [companies, setCompanies] = useState(initialCompanies);
+
+    const [reload, setReload] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
+
     const [createModalVisible, setCreateModalVisible] = useState(false);
     const [editModalVisible, setEditModalVisible] = useState(false);
+
+    // Form
+    const initialFormState = {
+        id: undefined,
+        name: undefined,
+    };
 
     const {
         data,
         setData,
-        get,
-        post,
-        put,
-        delete: destroy,
         processing,
         errors,
-    } = useForm({
-        id: undefined,
-        name: undefined,
-    });
+    } = useForm(initialFormState);
+
+    const resetForm = () => setData(initialFormState);
+
+
+
+    // Effects
+    useEffect(() => {
+        const fetchCompanies = async () => {
+            fetchAPI(`/v1/companies`)
+                .then(setCompanies)
+                .catch((err) => setError(err.response?.data?.message ?? err.message))
+                .finally(() => setIsLoading(false));
+        };
+
+        fetchCompanies();
+    }, [reload]);
+
+
 
     const openCreateModal = (e) => {
         e.preventDefault();
 
-        setData({ id: undefined, name: undefined });
+        resetForm();
+
         setCreateModalVisible(true);
     };
 
@@ -41,48 +66,56 @@ export default function Companies({ companies: initialCompanies = [], flash }) {
     const handleShow = (e, companyId) => {
         e.preventDefault();
 
-        setData({ id: undefined, name: undefined });
-        get(`/company/show/${companyId}`, {});
+        resetForm();
+
+        router.visit(`/company/${companyId}`, {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+        });
     };
 
     const handleCreate = (e) => {
         e.preventDefault();
 
-        post('/company/create', {
+        router.post('/company', data, {
             onSuccess: () => {
-                get(window.location.pathname);
+                setReload(!reload);
                 setCreateModalVisible(false);
+                resetForm();
             },
-            onFinish: () => {
-                setData({ id: undefined, name: undefined });
-            },
+            replace: true,
+            preserveScroll: true,
+            preserveState: true,
         });
     };
 
     const handleUpdate = (e) => {
         e.preventDefault();
 
-        put(`/company/update/${data.id}`, {
+        router.put(`/company/${data.id}`, data, {
             onSuccess: () => {
-                get(window.location.pathname);
+                setReload(!reload);
                 setEditModalVisible(false);
+                resetForm();
             },
-            onFinish: () => {
-                setData({ id: undefined, name: undefined });
-            },
+            replace: true,
+            preserveScroll: true,
+            preserveState: true,
         });
     };
 
     const handleDelete = (e, companyId) => {
         e.preventDefault();
 
-        destroy(`/company/delete/${companyId}`, {
+        router.delete(`/company/${companyId}`, {
             onSuccess: () => {
-                get(window.location.pathname);
+                setReload(!reload);
+                resetForm();
             },
-            onFinish: () => {
-                setData({ id: undefined, name: undefined });
-            },
+            replace: true,
+            preserveScroll: true,
+            preserveState: true,
         });
     };
 
@@ -103,13 +136,22 @@ export default function Companies({ companies: initialCompanies = [], flash }) {
                 </PrimaryButton>
             </div>
 
-            {initialCompanies.length > 0 ? (
+            {isLoading ? (
+                <div className="flex flex-col justify-center items-center space-y-2 py-10">
+                    <div className="w-8 h-8 border-4 border-indigo-500 border-dashed rounded-full animate-spin"></div>
+                    <span className="text-gray-600">Loading companies...</span>
+                </div>
+            ) : error ? (
+                <div className="text-red-500 text-center py-10">
+                    {error}
+                </div>
+            ) : companies.length > 0 ? (
                 <Table
                     columns={[
                         { key: 'name', label: 'Company Name' },
                         { key: 'actions', label: 'Actions', align: 'right' },
                     ]}
-                    data={initialCompanies}
+                    data={companies}
                     renderRow={(company) => (
                         <tr key={company.id}>
                             <td className="px-6 py-4 whitespace-nowrap text-gray-800 font-medium">

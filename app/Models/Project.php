@@ -22,4 +22,8 @@ class Project extends Model
     public function company() {
         return $this->hasOne(Company::class);
     }
+
+    public function users() {
+        return $this->belongsToMany(User::class);
+    }
 }

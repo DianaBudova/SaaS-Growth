@@ -1,22 +1,20 @@
 import { useEffect, useState } from 'react';
-import { router, useForm } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import FlashMessage from '@/Components/FlashMessage';
-import ProjectModal from '@/Components/Modals/ProjectModal';
+import ResourceSidebar from '@/Components/ResourceSidebar';
+import Accordion from '@/Components/Accordion';
 import PrimaryButton from '@/Components/PrimaryButton';
 import Table from '@/Components/Table';
-import SecondaryButton from '@/Components/SecondaryButton';
 import DangerButton from '@/Components/DangerButton';
-import Accordion from '@/Components/Accordion';
+import { router, useForm } from '@inertiajs/react';
 import { fetchAPI } from '@/helpers';
-import ResourceSidebar from '@/Components/ResourceSidebar';
+import InviteModal from '@/Components/Modals/InviteModal';
 
-export default function Company({ company, flash }) {
+export default function Project({ project, flash }) {
     // States
-    const [projects, setProjects] = useState([]);
+    const [members, setMembers] = useState([]);
 
-    const [createProjectModalVisible, setCreateProjectModalVisible] = useState(false);
-    const [editProjectModalVisible, setEditProjectModalVisible] = useState(false);
+    const [inviteModalVisible, setInviteModalVisible] = useState(false);
 
     const [reload, setReload] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
@@ -25,18 +23,9 @@ export default function Company({ company, flash }) {
 
 
     // Forms
-    const initialCompanyFormState = {
-        id: company.id,
-        name: company.name
-    };
-
-    const initialProjectFormState = {
-        id: undefined,
-        company_id: company.id,
-        name: undefined,
-        description: undefined,
-        start_date: undefined,
-        end_date: undefined
+    const initialInvitationFormState = {
+        project_id: project.id,
+        email: '',
     };
 
     const {
@@ -44,86 +33,46 @@ export default function Company({ company, flash }) {
         setData,
         processing,
         errors,
-    } = useForm(initialProjectFormState);
-
+    } = useForm(initialInvitationFormState);
+    
     // Form Resets
-    const resetCompanyForm = () => setData(initialCompanyFormState);
-    const resetProjectForm = () => setData(initialProjectFormState);
+    const resetInvitationForm = () => setData(initialInvitationFormState);
 
 
 
     // Effects
     useEffect(() => {
-        const fetchProjects = async () => {
-            fetchAPI(`/v1/companies/${company.id}/projects`)
-                .then(setProjects)
+        const fetchMembers = async () => {
+            fetchAPI(`/v1/projects/${project.id}/members`)
+                .then(setMembers)
                 .catch((err) => setError(err.response?.data?.message ?? err.message))
                 .finally(() => setIsLoading(false));
         };
 
-        fetchProjects();
+        fetchMembers();
     }, [reload]);
 
 
 
     // Functions
 
-    // Create
-    const openCreateProjectModal = (e) => {
+    // Invite
+    const openInviteMemberModal = (e) => {
         e.preventDefault();
 
-        resetProjectForm();
+        resetInvitationForm();
 
-        setCreateProjectModalVisible(true);
+        setInviteModalVisible(true);
     };
 
-    const handleCreateProject = (e) => {
+    const handleInviteMember = (e) => {
         e.preventDefault();
 
-        router.post('/project', data, {
+        router.post('/invitation/invite', data, {
             onSuccess: () => {
-                setReload(!reload);
-                setCreateProjectModalVisible(false);
-                resetProjectForm();
+                setInviteModalVisible(false);
+                resetInvitationForm();
             },
-            replace: true,
-            preserveScroll: true,
-            preserveState: true,
-        });
-    };
-
-
-
-    // Edit
-    const openEditProjectModal = (project) => {
-        setData({ id: project.id, company_id: company.id, name: project.name, description: project.description, start_date: project.start_date, end_date: project.end_date });
-        setEditProjectModalVisible(true);
-    };
-
-    const handleUpdateProject = (e) => {
-        e.preventDefault();
-
-        router.put(`/project/${data.id}`, data, {
-            onSuccess: () => {
-                setReload(!reload);
-                setEditProjectModalVisible(false);
-                resetProjectForm();
-            },
-            replace: true,
-            preserveScroll: true,
-            preserveState: true,
-        });
-    };
-
-
-
-    // Show
-    const handleShowProject = (e, projectId) => {
-        e.preventDefault();
-
-        resetProjectForm();
-
-        router.visit(`/project/${projectId}`, {
             preserveState: true,
             preserveScroll: true,
             replace: true,
@@ -132,18 +81,33 @@ export default function Company({ company, flash }) {
 
 
 
-    // Delete
-    const handleDeleteProject = (e, projectId) => {
+    // Show
+    const handleShowMember = (e, memberId) => {
         e.preventDefault();
 
-        router.delete(`/project/${projectId}`, {
+        resetInvitationForm();
+
+        router.visit(`/member/${memberId}`, {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+        });
+    };
+
+
+
+    // Exclude
+    const handleExcludeMember = (e, memberId) => {
+        e.preventDefault();
+
+        router.delete(`/project/${project.id}/members/${memberId}`, data, {
             onSuccess: () => {
                 setReload(!reload);
                 resetProjectForm();
             },
-            replace: true,
-            preserveScroll: true,
             preserveState: true,
+            preserveScroll: true,
+            replace: true,
         });
     };
 
@@ -155,12 +119,14 @@ export default function Company({ company, flash }) {
 
             <div className="flex flex-col lg:flex-row h-full">
                 <ResourceSidebar
-                    title={company.name}
+                    title={project.name}
                     meta={[
-                        { label: 'Company ID', value: company.id },
-                        { label: 'Owner ID',   value: company.owner_id },
-                        { label: 'Created',    value: new Date(company.created_at).toLocaleDateString() },
-                        { label: 'Updated',    value: new Date(company.updated_at).toLocaleDateString() },
+                        { label: 'Project ID',  value: project.id },
+                        { label: 'Description', value: project.description || '--' },
+                        { label: 'Start date',  value: project.start_date ? new Date(project.start_date).toLocaleDateString() : '--' },
+                        { label: 'End date',    value: project.end_date ? new Date(project.start_date).toLocaleDateString() : '--' },
+                        { label: 'Created',     value: new Date(project.created_at).toLocaleDateString() },
+                        { label: 'Updated',     value: new Date(project.updated_at).toLocaleDateString() },
                     ]}
                 />
 
@@ -168,78 +134,62 @@ export default function Company({ company, flash }) {
                     <Accordion>
                         <Accordion.Item defaultOpen>
                             <Accordion.Item.Header>
-                                <span className="text-xl font-semibold">Projects</span>
+                                <span className="text-xl font-semibold">Members</span>
                                 <p className="mt-1 text-sm text-gray-600">
-                                    View and manage your company's projects.
+                                    View and manage your project's members.
                                 </p>
                             </Accordion.Item.Header>
 
                             <Accordion.Item.Content>
                                 <div className="flex items-center justify-end mb-4">
                                     <PrimaryButton
-                                        onClick={openCreateProjectModal}
+                                        onClick={openInviteMemberModal}
                                         disabled={processing}
                                     >
-                                        + Create Project
+                                        + Invite Member
                                     </PrimaryButton>
                                 </div>
 
                                 {isLoading ? (
                                     <div className="flex flex-col justify-center items-center space-y-2 py-10">
                                         <div className="w-8 h-8 border-4 border-indigo-500 border-dashed rounded-full animate-spin"></div>
-                                        <span className="text-gray-600">Loading projects...</span>
+                                        <span className="text-gray-600">Loading members...</span>
                                     </div>
                                 ) : error ? (
                                     <div className="text-red-500 text-center py-10">
                                         {error}
                                     </div>
-                                ) : projects.length > 0 ? (
+                                ) : members.length > 0 ? (
                                     <Table
                                         columns={[
-                                            { key: 'name', label: 'Project Name' },
-                                            { key: 'description', label: 'Project Description' },
-                                            { key: 'start_date', label: 'Start Date' },
-                                            { key: 'end_date', label: 'End Date' },
+                                            { key: 'name', label: 'Member Name' },
+                                            { key: 'email', label: 'Member Email' },
                                             { key: 'actions', label: 'Actions', align: 'right' },
                                         ]}
-                                        data={projects}
-                                        renderRow={(project) => (
-                                            <tr key={project.id}>
+                                        data={members}
+                                        renderRow={(member) => (
+                                            <tr key={member.id}>
                                                 <td className="px-6 py-4 whitespace-nowrap text-gray-800 font-medium">
                                                     <button
                                                         type="button"
                                                         className="text-indigo-500 font-bold hover:underline"
-                                                        onClick={(e) => handleShowProject(e, project.id)}
+                                                        onClick={(e) => handleShowMember(e, member.id)}
                                                         disabled={processing}
                                                     >
-                                                        {project.name ?? '--'}
+                                                        {member.name ?? '--'}
                                                     </button>
                                                 </td>
 
                                                 <td className="px-6 py-4 whitespace-nowrap text-gray-800 font-medium">
-                                                    {project.description ?? '--'}
-                                                </td>
-
-                                                <td className="px-6 py-4 whitespace-nowrap text-gray-800 font-medium">
-                                                    {project.start_date ?? '--'}
-                                                </td>
-
-                                                <td className="px-6 py-4 whitespace-nowrap text-gray-800 font-medium">
-                                                    {project.end_date ?? '--'}
+                                                    {member.email ?? '--'}
                                                 </td>
 
                                                 <td className="px-6 py-4 whitespace-nowrap text-gray-800 font-medium">
                                                     <div className="flex justify-end gap-3">
-                                                        <SecondaryButton
-                                                            disabled={processing}
-                                                            onClick={() => openEditProjectModal(project)}
-                                                        >
-                                                            Edit
-                                                        </SecondaryButton>
                                                         <DangerButton
                                                             className="!p-2.5"
                                                             disabled={processing}
-                                                            onClick={(e) => handleDeleteProject(e, project.id)}
+                                                            onClick={(e) => handleExcludeMember(e, member.id)}
                                                         >
                                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-4 h-4 fill-current">
                                                                 <path d="M 10.806641 2 C 10.289641 2 9.7956875 2.2043125 9.4296875 2.5703125 L 9 3 L 4 3 A 1.0001 1.0001 0 1 0 4 5 L 20 5 A 1.0001 1.0001 0 1 0 20 3 L 15 3 L 14.570312 2.5703125 C 14.205312 2.2043125 13.710359 2 13.193359 2 L 10.806641 2 z M 4.3652344 7 L 5.8925781 20.263672 C 6.0245781 21.253672 6.877 22 7.875 22 L 16.123047 22 C 17.121047 22 17.974422 21.254859 18.107422 20.255859 L 19.634766 7 L 4.3652344 7 z"></path>
@@ -252,16 +202,16 @@ export default function Company({ company, flash }) {
                                     />
                                 ) : (
                                     <div className="text-gray-600 text-center py-10 border-2 border-dashed rounded-lg">
-                                        No projects in this company yet. Click{' '}
+                                        No members in this project yet. Click{' '}
                                         <button
                                             type="button"
-                                            onClick={openCreateProjectModal}
+                                            onClick={openInviteMemberModal}
                                             disabled={processing}
                                             className="text-indigo-500 font-medium hover:underline"
                                         >
                                             here
                                         </button>{' '}
-                                        to create one.
+                                        to invite one.
                                     </div>
                                 )}
                             </Accordion.Item.Content>
@@ -270,33 +220,17 @@ export default function Company({ company, flash }) {
                 </main>
             </div>
 
-            {createProjectModalVisible && (
-                <ProjectModal
-                    show={createProjectModalVisible}
-                    onClose={() => setCreateProjectModalVisible(false)}
+            {inviteModalVisible && (
+                <InviteModal
+                    show={inviteModalVisible}
+                    onClose={() => setInviteModalVisible(false)}
                     data={data}
                     setData={setData}
                     errors={errors}
                     processing={processing}
-                    onSubmit={handleCreateProject}
-                    title="Create Project"
-                    submitAction="Create"
-                    strictCompany
-                />
-            )}
-
-            {editProjectModalVisible && (
-                <ProjectModal
-                    show={editProjectModalVisible}
-                    onClose={() => setEditProjectModalVisible(false)}
-                    data={data}
-                    setData={setData}
-                    errors={errors}
-                    processing={processing}
-                    onSubmit={handleUpdateProject}
-                    title="Update Project"
-                    submitAction="Update"
-                    strictCompany
+                    onSubmit={handleInviteMember}
+                    title="Invite Member"
+                    submitAction="Send Invitation"
                 />
             )}
         </AuthenticatedLayout>

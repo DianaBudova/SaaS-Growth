@@ -3,6 +3,7 @@
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\InvitationController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -16,25 +17,21 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
-    Route::group(['prefix' => 'company'], function () {
-        Route::get('/', [CompanyController::class, 'index'])->name('company.index');
-        Route::get('/show/{id}', [CompanyController::class, 'show'])->name('company.show');
-        Route::post('/create', [CompanyController::class, 'store'])->name('company.store');
-        Route::put('/update/{id}', [CompanyController::class, 'update'])->name('company.update');
-        Route::delete('/delete/{id}', [CompanyController::class, 'destroy'])->name('company.destroy');
-    });
+    Route::resource('company', CompanyController::class)
+        ->only(['index', 'show', 'store', 'update', 'destroy']);
 
-    Route::group(['prefix' => 'project'], function () {
-        Route::get('/', [ProjectController::class, 'index'])->name('project.index');
-        Route::post('/create', [ProjectController::class, 'store'])->name('project.store');
-        Route::put('/update/{id}', [ProjectController::class, 'update'])->name('project.update');
-        Route::delete('/delete/{id}', [ProjectController::class, 'destroy'])->name('project.destroy');
-    });
+    Route::resource('project', ProjectController::class)
+        ->only(['index', 'show', 'store', 'update', 'destroy']);
 
     Route::group(['prefix' => 'profile'], function () {
         Route::get('/', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/update', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/delete', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    });
+
+    Route::group(['prefix' => 'invitation'], function () {
+        Route::post('/invite', [InvitationController::class, 'invite'])->name('invitation.invite');
+        Route::get('/accept/{token}', [InvitationController::class, 'accept'])->name('invitation.accept');
     });
 });
 

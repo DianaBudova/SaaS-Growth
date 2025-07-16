@@ -1,107 +1,127 @@
-import { Transition } from '@headlessui/react';
-import { Link } from '@inertiajs/react';
-import { createContext, useContext, useState } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+import LoadingSpinner from './LoadingSpinner';
 
-const DropDownContext = createContext();
+export default forwardRef(function Dropdown(
+    {
+        options = [],
+        className = '',
+        placeholder = 'Choose an option',
+        isFocused = false,
+        value = '',
+        onChange,
+        disabled = false,
+        loading = false,
+        ...props
+    },
+    ref
+) {
+    const buttonRef = useRef(null);
+    const menuRef = useRef(null);
+    const [isOpen, setIsOpen] = useState(false);
 
-const Dropdown = ({ children }) => {
-    const [open, setOpen] = useState(false);
+    useImperativeHandle(ref, () => ({
+        focus: () => buttonRef.current?.focus(),
+    }));
+
+    useEffect(() => {
+        if (isFocused) {
+            buttonRef.current?.focus();
+        }
+    }, [isFocused]);
+
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (
+                menuRef.current &&
+                !menuRef.current.contains(event.target) &&
+                !buttonRef.current.contains(event.target)
+            ) {
+                setIsOpen(false);
+            }
+        }
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
 
     const toggleOpen = () => {
-        setOpen((previousState) => !previousState);
+        if (!disabled) setIsOpen((prev) => !prev);
     };
 
-    return (
-        <DropDownContext.Provider value={{ open, setOpen, toggleOpen }}>
-            <div className="relative">{children}</div>
-        </DropDownContext.Provider>
-    );
-};
+    const handleSelect = (option) => {
+        setIsOpen(false);
 
-const Trigger = ({ children }) => {
-    const { open, setOpen, toggleOpen } = useContext(DropDownContext);
+        if (onChange) {
+            onChange({
+                target: {
+                    value: option.id,
+                    name: props.name,
+                },
+            });
+        }
+    };
 
-    return (
-        <>
-            <div onClick={toggleOpen}>{children}</div>
-
-            {open && (
-                <div
-                    className="fixed inset-0 z-40"
-                    onClick={() => setOpen(false)}
-                ></div>
-            )}
-        </>
-    );
-};
-
-const Content = ({
-    align = 'right',
-    width = '48',
-    contentClasses = 'py-1 bg-white',
-    children,
-}) => {
-    const { open, setOpen } = useContext(DropDownContext);
-
-    let alignmentClasses = 'origin-top';
-
-    if (align === 'left') {
-        alignmentClasses = 'ltr:origin-top-left rtl:origin-top-right start-0';
-    } else if (align === 'right') {
-        alignmentClasses = 'ltr:origin-top-right rtl:origin-top-left end-0';
-    }
-
-    let widthClasses = '';
-
-    if (width === '48') {
-        widthClasses = 'w-48';
-    }
+    const selectedOption = options.find((opt) => String(opt.id) === String(value));
 
     return (
-        <>
-            <Transition
-                show={open}
-                enter="transition ease-out duration-200"
-                enterFrom="opacity-0 scale-95"
-                enterTo="opacity-100 scale-100"
-                leave="transition ease-in duration-75"
-                leaveFrom="opacity-100 scale-100"
-                leaveTo="opacity-0 scale-95"
+        <div className={'relative inline-block ' + className}>
+            <button
+                ref={buttonRef}
+                type="button"
+                onClick={toggleOpen}
+                disabled={disabled || loading}
+                className={
+                    `flex items-center w-full rounded border border-gray-300 bg-white px-3 py-2 shadow-sm text-left focus:border-indigo-500 focus:ring-indigo-500 disabled:bg-gray-100 disabled:cursor-not-allowed ${loading ? 'justify-center cursor-wait' : 'justify-between'}`
+                }
             >
-                <div
-                    className={`absolute z-50 mt-2 rounded-md shadow-lg ${alignmentClasses} ${widthClasses}`}
-                    onClick={() => setOpen(false)}
-                >
+                {loading ? (
+                    <LoadingSpinner />
+                ) : 
+                    <>
+                        {selectedOption?.name || placeholder}
+                        <svg
+                            className="w-4 h-4 inline-block ml-2"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                        >
+                            <path
+                                fillRule="evenodd"
+                                d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.25a.75.75 0 01-1.06 0L5.25 8.27a.75.75 0 01-.02-1.06z"
+                                clipRule="evenodd"
+                            />
+                        </svg>
+                    </>
+                }
+            </button>
+
+            {isOpen &&
+                createPortal(
                     <div
-                        className={
-                            `rounded ring-1 ring-black ring-opacity-5 ` +
-                            contentClasses
-                        }
+                        ref={menuRef}
+                        className="absolute rounded border border-gray-200 bg-white shadow-lg z-50 max-h-60 overflow-y-auto"
+                        style={{
+                            top: (buttonRef.current?.getBoundingClientRect().bottom || 0) + window.scrollY + 'px',
+                            left: (buttonRef.current?.getBoundingClientRect().left || 0) + window.scrollX + 'px',
+                            width: buttonRef.current?.offsetWidth + 'px',
+                        }}
                     >
-                        {children}
-                    </div>
-                </div>
-            </Transition>
-        </>
-    );
-};
-
-const DropdownLink = ({ className = '', children, ...props }) => {
-    return (
-        <Link
-            {...props}
-            className={
-                'block w-full px-4 py-2 text-start text-sm leading-5 text-gray-700 transition duration-150 ease-in-out hover:bg-gray-100 focus:bg-gray-100 focus:outline-none ' +
-                className
+                        {options.map((option) => (
+                            <button
+                                key={option.id}
+                                type="button"
+                                onClick={() => handleSelect(option)}
+                                className="w-full text-left px-3 py-2 hover:bg-gray-100"
+                            >
+                                {option.name}
+                            </button>
+                        ))}
+                    </div>,
+                    document.body
+                )
             }
-        >
-            {children}
-        </Link>
+        </div>
     );
-};
-
-Dropdown.Trigger = Trigger;
-Dropdown.Content = Content;
-Dropdown.Link = DropdownLink;
-
-export default Dropdown;
+});

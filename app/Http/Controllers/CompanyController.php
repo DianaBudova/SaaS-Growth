@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Company;
 use App\Http\Requests\Company\CompanyCreateRequest;
-use App\Http\Requests\Company\CompanyDestroyRequest;
 use App\Http\Requests\Company\CompanyUpdateRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
@@ -17,9 +16,7 @@ class CompanyController extends Controller
     {
         $companies = Company::where('owner_id', auth()->id())->get();
 
-        return Inertia::render('Company/Companies', [
-            'companies' => $companies,
-        ]);
+        return Inertia::render('Company/Companies');
     }
 
     public function show(int $id): Response
@@ -40,7 +37,7 @@ class CompanyController extends Controller
             'owner_id' => auth()->id(),
         ]);
 
-        return redirect()->route('company.index')->with('success', 'Company created successfully.');
+        return redirect()->back()->with('success', 'Company created successfully.');
     }
 
     public function update(CompanyUpdateRequest $request): RedirectResponse
@@ -55,7 +52,7 @@ class CompanyController extends Controller
 
         $existingCompany->save();
 
-        return redirect()->route('company.index')->with('success', 'Company updated successfully.');
+        return redirect()->back()->with('success', 'Company updated successfully.');
     }
 
     public function destroy(int $id): RedirectResponse
@@ -64,6 +61,6 @@ class CompanyController extends Controller
 
         $existingCompany->delete();
 
-        return redirect()->route('company.index')->with('success', 'Company deleted successfully.');
+        return redirect()->back()->with('success', 'Company deleted successfully.');
     }
 }

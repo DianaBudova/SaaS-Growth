@@ -13,7 +13,14 @@ class ProjectController extends Controller
 {
     public function index(): Response
     {
-        return Inertia::render('Project/Projects', []);
+        return Inertia::render('Project/Projects');
+    }
+
+    public function show(int $id): Response
+    {
+        return Inertia::render('Project/Project', [
+            'project' => Project::findOrFail($id),
+        ]);
     }
 
     public function store(ProjectCreateRequest $request): RedirectResponse
