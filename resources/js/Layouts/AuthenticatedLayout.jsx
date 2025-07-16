@@ -1,9 +1,13 @@
 import { Inertia } from '@inertiajs/inertia';
+import { usePage } from '@inertiajs/react';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import HeaderContainer from '@/Components/HeaderContainer';
 import HeaderItem from '@/Components/HeaderItem';
+import FlashMessage from '@/Components/FlashMessage';
 
 export default function AuthenticatedLayout({ children }) {
+    const { flash } = usePage().props;
+
     return (
         <div className="h-screen flex overflow-hidden bg-gray-100">
             <aside className="w-64 bg-gray-800 flex flex-col">
@@ -36,6 +40,10 @@ export default function AuthenticatedLayout({ children }) {
                 </HeaderContainer>
 
                 <div className="flex-1 overflow-auto bg-white p-6 shadow">
+                    <FlashMessage type="success" message={flash?.success} />
+                    <FlashMessage type="info" message={flash?.info} />
+                    <FlashMessage type="error" message={flash?.error} />
+
                     {children}
                 </div>
             </div>

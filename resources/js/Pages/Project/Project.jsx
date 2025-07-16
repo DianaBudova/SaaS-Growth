@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import FlashMessage from '@/Components/FlashMessage';
 import ResourceSidebar from '@/Components/ResourceSidebar';
 import Accordion from '@/Components/Accordion';
 import PrimaryButton from '@/Components/PrimaryButton';
@@ -10,7 +9,7 @@ import { router, useForm } from '@inertiajs/react';
 import { fetchAPI } from '@/helpers';
 import InviteModal from '@/Components/Modals/InviteModal';
 
-export default function Project({ project, flash }) {
+export default function Project({ project }) {
     // States
     const [members, setMembers] = useState([]);
 
@@ -115,8 +114,6 @@ export default function Project({ project, flash }) {
 
     return (
         <AuthenticatedLayout>
-            <FlashMessage message={flash?.success} />
-
             <div className="flex flex-col lg:flex-row h-full">
                 <ResourceSidebar
                     title={project.name}

@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { router, useForm } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import FlashMessage from '@/Components/FlashMessage';
 import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton from '@/Components/SecondaryButton';
 import DangerButton from '@/Components/DangerButton';
@@ -9,7 +8,7 @@ import Table from '@/Components/Table';
 import ProjectModal from '@/Components/Modals/ProjectModal';
 import { fetchAPI } from '@/helpers';
 
-export default function Projects({ projects: initialProjects = [], flash }) {
+export default function Projects({ projects: initialProjects = [] }) {
     const [projects, setProjects] = useState(initialProjects);
 
     const [reload, setReload] = useState(false);
@@ -125,8 +124,6 @@ export default function Projects({ projects: initialProjects = [], flash }) {
 
     return (
         <AuthenticatedLayout>
-            <FlashMessage message={flash?.success} />
-
             <div className="flex items-center justify-between mb-6">
                 <div>
                     <h1 className="text-lg font-medium text-gray-900">Projects</h1>

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\User;
 use App\Mail\InviteUserMail;
 use App\Models\Invitation;
 use Illuminate\Support\Str;
@@ -19,6 +20,47 @@ class InvitationService
             'project_id' => $data['project_id'],
         ]);
 
-        Mail::to($email)->send(new InviteUserMail($invitation));
+        Mail::to($data['email'])->send(new InviteUserMail($invitation));
+    }
+
+    public function accept(string $token): Invitation
+    {
+        $invitation = Invitation::where('token', $token)->firstOrFail();
+
+        if ($invitation->accepted) {
+            return $invitation;
+        }
+
+        $invitation->update(['accepted' => true]);
+
+        return $invitation;
+    }
+
+    public function acceptWithUser(string $token, User $user): Invitation
+    {
+        $invitation = $this->accept($token);
+        $invitation->project->users()->attach($user->id);
+
+        return $invitation;
+    }
+
+    public function handlePostRegistrationInvitation(User $user): ?Invitation
+    {
+        $token = session('invitation_token');
+
+        if (!$token) {
+            return null;
+        }
+
+        session()->forget('invitation_token');
+
+        return $this->acceptWithUser($token, $user);
+    }
+
+    public function isAccepted(string $token): bool
+    {
+        $invitation = Invitation::where('token', $token)->first();
+
+        return $invitation ? $invitation->accepted : false;
     }
 }

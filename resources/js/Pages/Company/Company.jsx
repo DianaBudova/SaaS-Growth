@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { router, useForm } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import FlashMessage from '@/Components/FlashMessage';
 import ProjectModal from '@/Components/Modals/ProjectModal';
 import PrimaryButton from '@/Components/PrimaryButton';
 import Table from '@/Components/Table';
@@ -11,7 +10,7 @@ import Accordion from '@/Components/Accordion';
 import { fetchAPI } from '@/helpers';
 import ResourceSidebar from '@/Components/ResourceSidebar';
 
-export default function Company({ company, flash }) {
+export default function Company({ company }) {
     // States
     const [projects, setProjects] = useState([]);
 
@@ -151,8 +150,6 @@ export default function Company({ company, flash }) {
 
     return (
         <AuthenticatedLayout>
-            <FlashMessage message={flash?.success} />
-
             <div className="flex flex-col lg:flex-row h-full">
                 <ResourceSidebar
                     title={company.name}
