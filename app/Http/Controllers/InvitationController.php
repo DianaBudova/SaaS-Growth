@@ -7,7 +7,6 @@ use App\Services\InvitationService;
 use App\Http\Requests\InviteRequest;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Log;
 
 class InvitationController extends Controller
 {
@@ -16,13 +15,11 @@ class InvitationController extends Controller
         $validated = $request->validated();
 
         try {
-            Log::debug(1);
             $inviter->send($validated);
-            Log::debug(2);
 
             return redirect()->back()->with('success', 'Invitation sent successfully.');
         } catch (\Throwable $th) {
-            return redirect()->back()->with('error', 'Something went wrong.');
+            return redirect()->back()->with('error', 'Invitation was not sent.');
         }
     }
 

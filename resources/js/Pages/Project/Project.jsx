@@ -15,7 +15,6 @@ export default function Project({ project }) {
 
     const [inviteModalVisible, setInviteModalVisible] = useState(false);
 
-    const [reload, setReload] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -39,17 +38,20 @@ export default function Project({ project }) {
 
 
 
+    // Fetch
+    const fetchMembers = async () => {
+        fetchAPI(`/v1/projects/${project.id}/members`)
+            .then(setMembers)
+            .catch((err) => setError(err.response?.message ?? err.message))
+            .finally(() => setIsLoading(false));
+    };
+
+
+
     // Effects
     useEffect(() => {
-        const fetchMembers = async () => {
-            fetchAPI(`/v1/projects/${project.id}/members`)
-                .then(setMembers)
-                .catch((err) => setError(err.response?.data?.message ?? err.message))
-                .finally(() => setIsLoading(false));
-        };
-
         fetchMembers();
-    }, [reload]);
+    }, [project.id]);
 
 
 
@@ -86,7 +88,7 @@ export default function Project({ project }) {
 
         resetInvitationForm();
 
-        router.visit(`/member/${memberId}`, {
+        router.visit(`/user/${memberId}`, {
             preserveState: true,
             preserveScroll: true,
             replace: true,
@@ -99,10 +101,9 @@ export default function Project({ project }) {
     const handleExcludeMember = (e, memberId) => {
         e.preventDefault();
 
-        router.delete(`/project/${project.id}/members/${memberId}`, data, {
+        router.delete(`/project/${project.id}/members/${memberId}`, {
             onSuccess: () => {
-                setReload(!reload);
-                resetProjectForm();
+                fetchMembers();
             },
             preserveState: true,
             preserveScroll: true,

@@ -23,6 +23,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('project', ProjectController::class)
         ->only(['index', 'show', 'store', 'update', 'destroy']);
 
+    Route::delete('/project/{projectId}/members/{memberId}', [ProjectController::class, 'removeMember'])->name('project.removeMember');
+
     Route::group(['prefix' => 'profile'], function () {
         Route::get('/', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/update', [ProfileController::class, 'update'])->name('profile.update');

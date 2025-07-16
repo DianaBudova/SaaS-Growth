@@ -17,7 +17,6 @@ export default function Company({ company }) {
     const [createProjectModalVisible, setCreateProjectModalVisible] = useState(false);
     const [editProjectModalVisible, setEditProjectModalVisible] = useState(false);
 
-    const [reload, setReload] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -51,17 +50,20 @@ export default function Company({ company }) {
 
 
 
+    // Fetch
+    const fetchProjects = async () => {
+        fetchAPI(`/v1/companies/${company.id}/projects`)
+            .then(setProjects)
+            .catch((err) => setError(err.response?.message ?? err.message))
+            .finally(() => setIsLoading(false));
+    };
+
+
+
     // Effects
     useEffect(() => {
-        const fetchProjects = async () => {
-            fetchAPI(`/v1/companies/${company.id}/projects`)
-                .then(setProjects)
-                .catch((err) => setError(err.response?.data?.message ?? err.message))
-                .finally(() => setIsLoading(false));
-        };
-
         fetchProjects();
-    }, [reload]);
+    }, [company.id]);
 
 
 
@@ -81,7 +83,7 @@ export default function Company({ company }) {
 
         router.post('/project', data, {
             onSuccess: () => {
-                setReload(!reload);
+                fetchProjects();
                 setCreateProjectModalVisible(false);
                 resetProjectForm();
             },
@@ -104,7 +106,7 @@ export default function Company({ company }) {
 
         router.put(`/project/${data.id}`, data, {
             onSuccess: () => {
-                setReload(!reload);
+                fetchProjects();
                 setEditProjectModalVisible(false);
                 resetProjectForm();
             },
@@ -137,7 +139,7 @@ export default function Company({ company }) {
 
         router.delete(`/project/${projectId}`, {
             onSuccess: () => {
-                setReload(!reload);
+                fetchProjects();
                 resetProjectForm();
             },
             replace: true,

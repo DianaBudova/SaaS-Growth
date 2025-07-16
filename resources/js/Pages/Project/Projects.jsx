@@ -11,7 +11,6 @@ import { fetchAPI } from '@/helpers';
 export default function Projects({ projects: initialProjects = [] }) {
     const [projects, setProjects] = useState(initialProjects);
 
-    const [reload, setReload] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -39,17 +38,20 @@ export default function Projects({ projects: initialProjects = [] }) {
 
 
 
+    // Fetch
+    const fetchProjects = async () => {
+        fetchAPI(`/v1/projects`)
+            .then(setProjects)
+            .catch((err) => setError(err.response?.message ?? err.message))
+            .finally(() => setIsLoading(false));
+    };
+
+
+
     // Effects
     useEffect(() => {
-        const fetchProjects = async () => {
-            fetchAPI(`/v1/projects`)
-                .then(setProjects)
-                .catch((err) => setError(err.response?.data?.message ?? err.message))
-                .finally(() => setIsLoading(false));
-        };
-
         fetchProjects();
-    }, [reload]);
+    }, []);
 
 
 
@@ -83,7 +85,7 @@ export default function Projects({ projects: initialProjects = [] }) {
 
         router.post('/project', data, {
             onSuccess: () => {
-                setReload(!reload);
+                fetchProjects();
                 setCreateModalVisible(false);
                 resetForm();
             },
@@ -98,7 +100,7 @@ export default function Projects({ projects: initialProjects = [] }) {
 
         router.put(`/project/${data.id}`, data, {
             onSuccess: () => {
-                setReload(!reload);
+                fetchProjects();
                 setEditModalVisible(false);
                 resetForm();
             },
@@ -111,9 +113,9 @@ export default function Projects({ projects: initialProjects = [] }) {
     const handleDelete = (e, projectId) => {
         e.preventDefault();
 
-        router.delete(`/project/${projectId}`, data, {
+        router.delete(`/project/${projectId}`, {
             onSuccess: () => {
-                setReload(!reload);
+                fetchProjects();
                 resetForm();
             },
             replace: true,

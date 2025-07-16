@@ -61,4 +61,11 @@ class ProjectController extends Controller
 
         return redirect()->back()->with('success', 'Project removed successfully.');
     }
+
+    public function removeMember(int $projectId, int $memberId): RedirectResponse
+    {
+        Project::findOrFail($projectId)->users()->detach($memberId);
+
+        return redirect()->back()->with('success', 'Member removed successfully.');
+    }
 }

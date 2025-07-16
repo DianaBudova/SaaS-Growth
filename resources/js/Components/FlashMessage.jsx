@@ -65,13 +65,28 @@ export default function FlashMessage({ type = 'info', message, duration = 4000 }
         setVisible(false);
     };
 
-    const palette = {
-        success: 'green',
-        info: 'stone',
-        error: 'red'
+    const paletteClasses = {
+        success: {
+            bg: 'bg-green-200',
+            text: 'text-green-900',
+            close: 'text-green-700 hover:text-green-900',
+            progress: 'bg-green-600',
+        },
+        info: {
+            bg: 'bg-stone-200',
+            text: 'text-stone-900',
+            close: 'text-stone-700 hover:text-stone-900',
+            progress: 'bg-stone-600',
+        },
+        error: {
+            bg: 'bg-red-200',
+            text: 'text-red-900',
+            close: 'text-red-700 hover:text-red-900',
+            progress: 'bg-red-600',
+        }
     };
 
-    const color = palette[type] || 'stone';
+    const classes = paletteClasses[type] || paletteClasses.info;
 
     return (
         <div
@@ -83,7 +98,7 @@ export default function FlashMessage({ type = 'info', message, duration = 4000 }
                 px-8 py-5 pr-14 rounded shadow overflow-hidden
                 transition-opacity duration-300
                 ${visible ? 'opacity-100' : 'opacity-0 pointer-events-none'}
-                bg-${color}-200 text-${color}-900
+                ${classes.bg} ${classes.text}
             `}
         >
             {message}
@@ -91,7 +106,7 @@ export default function FlashMessage({ type = 'info', message, duration = 4000 }
             <button
                 onClick={close}
                 aria-label="Close notification"
-                className={`absolute top-3 right-3 text-${color}-700 hover:text-${color}-900 focus:outline-none`}
+                className={`absolute top-3 right-3 ${classes.close} focus:outline-none`}
             >
                 <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -101,7 +116,7 @@ export default function FlashMessage({ type = 'info', message, duration = 4000 }
             <div className="absolute bottom-0 left-0 h-1 w-full bg-black/10">
                 <div
                     style={{ transform: `scaleX(${progress / 100})` }}
-                    className={`origin-left h-full transition-transform duration-75 ease-linear bg-${color}-600`}
+                    className={`origin-left h-full transition-transform duration-75 ease-linear ${classes.progress}`}
                 />
             </div>
         </div>

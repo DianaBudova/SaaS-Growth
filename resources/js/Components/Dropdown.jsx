@@ -19,10 +19,15 @@ export default forwardRef(function Dropdown(
     const buttonRef = useRef(null);
     const menuRef = useRef(null);
     const [isOpen, setIsOpen] = useState(false);
+    const [focusedIndex, setFocusedIndex] = useState(-1);
+
+
 
     useImperativeHandle(ref, () => ({
         focus: () => buttonRef.current?.focus(),
     }));
+
+
 
     useEffect(() => {
         if (isFocused) {
@@ -30,29 +35,102 @@ export default forwardRef(function Dropdown(
         }
     }, [isFocused]);
 
+
+
     useEffect(() => {
-        function handleClickOutside(event) {
+        const handleClickOutside = (event) => {
             if (
                 menuRef.current &&
                 !menuRef.current.contains(event.target) &&
                 !buttonRef.current.contains(event.target)
             ) {
                 setIsOpen(false);
+                setFocusedIndex(-1);
             }
-        }
+        };
         document.addEventListener('mousedown', handleClickOutside);
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, []);
 
+
+
+    useEffect(() => {
+        const handleKeyDown = (event) => {
+            if (!isOpen) {
+                if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+                    event.preventDefault();
+                    if (!disabled) setIsOpen(true);
+                }
+                return;
+            }
+
+            switch (event.key) {
+                case 'ArrowDown':
+                    event.preventDefault();
+                    setFocusedIndex((prev) => (prev < options.length - 1 ? prev + 1 : 0));
+                    break;
+                case 'ArrowUp':
+                    event.preventDefault();
+                    setFocusedIndex((prev) => (prev > 0 ? prev - 1 : options.length - 1));
+                    break;
+                case 'Enter':
+                    event.preventDefault();
+                    if (focusedIndex >= 0 && focusedIndex < options.length) {
+                        handleSelect(options[focusedIndex]);
+                        setFocusedIndex(focusedIndex);
+                    }
+                    break;
+                case 'Escape':
+                    event.preventDefault();
+                    setIsOpen(false);
+
+                    setFocusedIndex(selectedIndex);
+                    
+                    buttonRef.current?.focus();
+                    break;
+                default:
+                    break;
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyDown);
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [isOpen, focusedIndex, options]);
+
+
+
+    useEffect(() => {
+        if (isOpen && focusedIndex >= 0 && menuRef.current) {
+            const focusedElement = menuRef.current.children[focusedIndex];
+            if (focusedElement) {
+                focusedElement.scrollIntoView({ block: 'nearest' });
+            }
+        }
+    }, [focusedIndex, isOpen]);
+
+
+
     const toggleOpen = () => {
-        if (!disabled) setIsOpen((prev) => !prev);
+        if (!disabled) {
+            setIsOpen((prev) => {
+                const newIsOpen = !prev;
+                setFocusedIndex(newIsOpen ? focusedIndex : -1);
+                return newIsOpen;
+            });
+        }
     };
+
+
 
     const handleSelect = (option) => {
         setIsOpen(false);
 
+        setFocusedIndex(selectedIndex >= 0 ? selectedIndex : -1);
+        
         if (onChange) {
             onChange({
                 target: {
@@ -63,7 +141,10 @@ export default forwardRef(function Dropdown(
         }
     };
 
+
+
     const selectedOption = options.find((opt) => String(opt.id) === String(value));
+    const selectedIndex  = options.findIndex((opt) => String(opt.id) === String(value));
 
     return (
         <div className={'relative inline-block ' + className}>
@@ -78,7 +159,7 @@ export default forwardRef(function Dropdown(
             >
                 {loading ? (
                     <LoadingSpinner />
-                ) : 
+                ) : (
                     <>
                         {selectedOption?.name || placeholder}
                         <svg
@@ -94,7 +175,7 @@ export default forwardRef(function Dropdown(
                             />
                         </svg>
                     </>
-                }
+                )}
             </button>
 
             {isOpen &&
@@ -108,20 +189,19 @@ export default forwardRef(function Dropdown(
                             width: buttonRef.current?.offsetWidth + 'px',
                         }}
                     >
-                        {options.map((option) => (
+                        {options.map((option, index) => (
                             <button
                                 key={option.id}
                                 type="button"
                                 onClick={() => handleSelect(option)}
-                                className="w-full text-left px-3 py-2 hover:bg-gray-100"
+                                className={`w-full text-left px-3 py-2 hover:bg-gray-100 ${index === focusedIndex ? 'bg-indigo-100' : ''}`}
                             >
                                 {option.name}
                             </button>
                         ))}
                     </div>,
                     document.body
-                )
-            }
+                )}
         </div>
     );
 });

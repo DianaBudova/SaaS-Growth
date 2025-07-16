@@ -11,7 +11,6 @@ import { fetchAPI } from '@/helpers';
 export default function Companies({ companies: initialCompanies = [] }) {
     const [companies, setCompanies] = useState(initialCompanies);
 
-    const [reload, setReload] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -35,17 +34,20 @@ export default function Companies({ companies: initialCompanies = [] }) {
 
 
 
+    // Fetch
+    const fetchCompanies = async () => {
+        fetchAPI(`/v1/companies`)
+            .then(setCompanies)
+            .catch((err) => setError(err.response?.message ?? err.message))
+            .finally(() => setIsLoading(false));
+    };
+
+
+
     // Effects
     useEffect(() => {
-        const fetchCompanies = async () => {
-            fetchAPI(`/v1/companies`)
-                .then(setCompanies)
-                .catch((err) => setError(err.response?.data?.message ?? err.message))
-                .finally(() => setIsLoading(false));
-        };
-
         fetchCompanies();
-    }, [reload]);
+    }, []);
 
 
 
@@ -79,7 +81,7 @@ export default function Companies({ companies: initialCompanies = [] }) {
 
         router.post('/company', data, {
             onSuccess: () => {
-                setReload(!reload);
+                fetchCompanies();
                 setCreateModalVisible(false);
                 resetForm();
             },
@@ -94,7 +96,7 @@ export default function Companies({ companies: initialCompanies = [] }) {
 
         router.put(`/company/${data.id}`, data, {
             onSuccess: () => {
-                setReload(!reload);
+                fetchCompanies();
                 setEditModalVisible(false);
                 resetForm();
             },
@@ -109,7 +111,7 @@ export default function Companies({ companies: initialCompanies = [] }) {
 
         router.delete(`/company/${companyId}`, {
             onSuccess: () => {
-                setReload(!reload);
+                fetchCompanies();
                 resetForm();
             },
             replace: true,
