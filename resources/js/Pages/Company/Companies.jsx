@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useForm } from '@inertiajs/react';
+import { router, useForm } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import FlashMessage from '@/Components/FlashMessage';
 import PrimaryButton from '@/Components/PrimaryButton';
@@ -28,10 +28,6 @@ export default function Companies({ companies: initialCompanies = [], flash }) {
     const {
         data,
         setData,
-        get,
-        post,
-        put,
-        delete: destroy,
         processing,
         errors,
     } = useForm(initialFormState);
@@ -72,47 +68,54 @@ export default function Companies({ companies: initialCompanies = [], flash }) {
 
         resetForm();
 
-        get(`/company/${companyId}`, {});
+        router.visit(`/company/${companyId}`, {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+        });
     };
 
     const handleCreate = (e) => {
         e.preventDefault();
 
-        post('/company', {
+        router.post('/company', data, {
             onSuccess: () => {
                 setReload(!reload);
                 setCreateModalVisible(false);
-            },
-            onFinish: () => {
                 resetForm();
             },
+            replace: true,
+            preserveScroll: true,
+            preserveState: true,
         });
     };
 
     const handleUpdate = (e) => {
         e.preventDefault();
 
-        put(`/company/${data.id}`, {
+        router.put(`/company/${data.id}`, data, {
             onSuccess: () => {
                 setReload(!reload);
                 setEditModalVisible(false);
-            },
-            onFinish: () => {
                 resetForm();
             },
+            replace: true,
+            preserveScroll: true,
+            preserveState: true,
         });
     };
 
     const handleDelete = (e, companyId) => {
         e.preventDefault();
 
-        destroy(`/company/${companyId}`, {
+        router.delete(`/company/${companyId}`, {
             onSuccess: () => {
                 setReload(!reload);
-            },
-            onFinish: () => {
                 resetForm();
             },
+            replace: true,
+            preserveScroll: true,
+            preserveState: true,
         });
     };
 

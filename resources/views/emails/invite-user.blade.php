@@ -7,7 +7,7 @@ You’ve been invited to join the project
 
 Click the button below to accept the invitation.
 
-@component('mail::button', ['url' => route('dashboard')])
+@component('mail::button', ['url' => $acceptUrl])
 Accept Invitation
 @endcomponent
 

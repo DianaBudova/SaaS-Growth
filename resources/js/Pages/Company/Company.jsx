@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useForm } from '@inertiajs/react';
+import { router, useForm } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import FlashMessage from '@/Components/FlashMessage';
 import ProjectModal from '@/Components/Modals/ProjectModal';
@@ -42,10 +42,6 @@ export default function Company({ company, flash }) {
     const {
         data,
         setData,
-        get,
-        post,
-        put,
-        delete: destroy,
         processing,
         errors,
     } = useForm(initialProjectFormState);
@@ -84,14 +80,15 @@ export default function Company({ company, flash }) {
     const handleCreateProject = (e) => {
         e.preventDefault();
 
-        post('/project', {
+        router.post('/project', data, {
             onSuccess: () => {
                 setReload(!reload);
                 setCreateProjectModalVisible(false);
-            },
-            onFinish: () => {
                 resetProjectForm();
             },
+            replace: true,
+            preserveScroll: true,
+            preserveState: true,
         });
     };
 
@@ -106,14 +103,15 @@ export default function Company({ company, flash }) {
     const handleUpdateProject = (e) => {
         e.preventDefault();
 
-        put(`/project/${data.id}`, {
+        router.put(`/project/${data.id}`, data, {
             onSuccess: () => {
                 setReload(!reload);
                 setEditProjectModalVisible(false);
-            },
-            onFinish: () => {
                 resetProjectForm();
             },
+            replace: true,
+            preserveScroll: true,
+            preserveState: true,
         });
     };
 
@@ -125,7 +123,11 @@ export default function Company({ company, flash }) {
 
         resetProjectForm();
 
-        get(`/project/${projectId}`, {});
+        router.visit(`/project/${projectId}`, {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+        });
     };
 
 
@@ -134,13 +136,14 @@ export default function Company({ company, flash }) {
     const handleDeleteProject = (e, projectId) => {
         e.preventDefault();
 
-        destroy(`/project/${projectId}`, {
+        router.delete(`/project/${projectId}`, {
             onSuccess: () => {
                 setReload(!reload);
-            },
-            onFinish: () => {
                 resetProjectForm();
             },
+            replace: true,
+            preserveScroll: true,
+            preserveState: true,
         });
     };
 

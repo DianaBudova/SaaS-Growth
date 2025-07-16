@@ -6,7 +6,7 @@ import Accordion from '@/Components/Accordion';
 import PrimaryButton from '@/Components/PrimaryButton';
 import Table from '@/Components/Table';
 import DangerButton from '@/Components/DangerButton';
-import { useForm } from '@inertiajs/react';
+import { router, useForm } from '@inertiajs/react';
 import { fetchAPI } from '@/helpers';
 import InviteModal from '@/Components/Modals/InviteModal';
 
@@ -31,10 +31,6 @@ export default function Project({ project, flash }) {
     const {
         data,
         setData,
-        get,
-        post,
-        put,
-        delete: destroy,
         processing,
         errors,
     } = useForm(initialInvitationFormState);
@@ -72,13 +68,14 @@ export default function Project({ project, flash }) {
     const handleInviteMember = (e) => {
         e.preventDefault();
 
-        post('/invite', {
+        router.post('/invitation/invite', data, {
             onSuccess: () => {
                 setInviteModalVisible(false);
-            },
-            onFinish: () => {
                 resetInvitationForm();
             },
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
         });
     };
 
@@ -90,7 +87,11 @@ export default function Project({ project, flash }) {
 
         resetInvitationForm();
 
-        get(`/member/${memberId}`, {});
+        router.visit(`/member/${memberId}`, {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+        });
     };
 
 
@@ -99,13 +100,14 @@ export default function Project({ project, flash }) {
     const handleExcludeMember = (e, memberId) => {
         e.preventDefault();
 
-        destroy(`/project/${project.id}/members/${memberId}`, {
+        router.delete(`/project/${project.id}/members/${memberId}`, data, {
             onSuccess: () => {
                 setReload(!reload);
-            },
-            onFinish: () => {
                 resetProjectForm();
             },
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
         });
     };
 

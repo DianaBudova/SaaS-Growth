@@ -29,7 +29,10 @@ Route::middleware('auth')->group(function () {
         Route::delete('/delete', [ProfileController::class, 'destroy'])->name('profile.destroy');
     });
 
-    Route::post('/invite', [InvitationController::class, 'invite']);
+    Route::group(['prefix' => 'invitation'], function () {
+        Route::post('/invite', [InvitationController::class, 'invite'])->name('invitation.invite');
+        Route::get('/accept/{token}', [InvitationController::class, 'accept'])->name('invitation.accept');
+    });
 });
 
 require __DIR__.'/auth.php';

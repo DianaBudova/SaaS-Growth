@@ -15,9 +15,9 @@ class InviteUserMail extends Mailable
 
     public string $email;
 
-    public function __construct(string $email, array $data = [])
+    public function __construct(Invitation $invitation)
     {
-        $this->email = $email;
+        $this->invitation = $invitation;
     }
 
     /**
@@ -37,6 +37,9 @@ class InviteUserMail extends Mailable
     {
         return new Content(
             markdown: 'emails.invite-user',
+            with: [
+                'acceptUrl' => route('invitations.accept', $this->invitation->token)
+            ]
         );
     }
 

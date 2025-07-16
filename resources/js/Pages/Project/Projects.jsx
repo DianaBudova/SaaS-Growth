@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useForm } from '@inertiajs/react';
+import { router, useForm } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import FlashMessage from '@/Components/FlashMessage';
 import PrimaryButton from '@/Components/PrimaryButton';
@@ -32,10 +32,6 @@ export default function Projects({ projects: initialProjects = [], flash }) {
     const {
         data,
         setData,
-        get,
-        post,
-        put,
-        delete: destroy,
         processing,
         errors,
     } = useForm(initialFormState);
@@ -76,47 +72,54 @@ export default function Projects({ projects: initialProjects = [], flash }) {
 
         resetForm();
 
-        get(`/project/${projectId}`, {});
+        router.visit(`/project/${projectId}`, {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+        });
     };
 
     const handleCreate = (e) => {
         e.preventDefault();
 
-        post('/project', {
+        router.post('/project', data, {
             onSuccess: () => {
                 setReload(!reload);
                 setCreateModalVisible(false);
-            },
-            onFinish: () => {
                 resetForm();
             },
+            replace: true,
+            preserveScroll: true,
+            preserveState: true
         });
     };
 
     const handleUpdate = (e) => {
         e.preventDefault();
 
-        put(`/project/${data.id}`, {
+        router.put(`/project/${data.id}`, data, {
             onSuccess: () => {
                 setReload(!reload);
                 setEditModalVisible(false);
-            },
-            onFinish: () => {
                 resetForm();
             },
+            replace: true,
+            preserveScroll: true,
+            preserveState: true
         });
     };
 
     const handleDelete = (e, projectId) => {
         e.preventDefault();
 
-        destroy(`/project/${projectId}`, {
+        router.delete(`/project/${projectId}`, data, {
             onSuccess: () => {
                 setReload(!reload);
-            },
-            onFinish: () => {
                 resetForm();
             },
+            replace: true,
+            preserveScroll: true,
+            preserveState: true
         });
     };
 

@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\Api\CompanyController;
-use App\Http\Controllers\Api\ProjectController;
+use App\Http\Controllers\Api\V1\CompanyController;
+use App\Http\Controllers\Api\V1\ProjectController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
