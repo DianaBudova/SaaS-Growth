@@ -2,8 +2,12 @@
 
 namespace App\Models;
 
+use App\Models\ProjectUser;
+use App\Observers\ProjectObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 
+#[ObservedBy(ProjectObserver::class)]
 class Project extends Model
 {
     /**
@@ -24,6 +28,7 @@ class Project extends Model
     }
 
     public function users() {
-        return $this->belongsToMany(User::class);
+        return $this->belongsToMany(User::class)
+            ->using(ProjectUser::class);
     }
 }

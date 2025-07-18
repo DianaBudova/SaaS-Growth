@@ -73,10 +73,10 @@ export default function FlashMessage({ type = 'info', message, duration = 4000 }
             progress: 'bg-green-600',
         },
         info: {
-            bg: 'bg-stone-200',
-            text: 'text-stone-900',
-            close: 'text-stone-700 hover:text-stone-900',
-            progress: 'bg-stone-600',
+            bg: 'bg-neutral-200',
+            text: 'text-neutral-900',
+            close: 'text-neutral-700 hover:text-neutral-900',
+            progress: 'bg-neutral-600',
         },
         error: {
             bg: 'bg-red-200',

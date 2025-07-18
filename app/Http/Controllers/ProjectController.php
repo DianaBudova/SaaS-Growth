@@ -18,8 +18,14 @@ class ProjectController extends Controller
 
     public function show(int $id): Response
     {
+        $existingProject = Project::find($id);
+
+        if (! $existingProject) {
+            return redirect()->back()->with('error', 'Project not found.');
+        }
+
         return Inertia::render('Project/Project', [
-            'project' => Project::findOrFail($id),
+            'project' => $existingProject,
         ]);
     }
 
@@ -42,7 +48,11 @@ class ProjectController extends Controller
     {
         $validated = $request->validated();
 
-        $existingProject = Project::findOrFail($validated['id']);
+        $existingProject = Project::find($validated['id']);
+
+        if (! $existingProject) {
+            return redirect()->back()->with('error', 'Project not found.');
+        }
 
         $existingProject->update([
             'company_id'  => $validated['company_id'],
@@ -57,14 +67,27 @@ class ProjectController extends Controller
 
     public function destroy(int $id): RedirectResponse
     {
-        Project::findOrFail($id)->delete();
+        $existingProject = Project::find($id);
+
+        if (! $existingProject) {
+            return redirect()->back()->with('error', 'Project not found.');
+        }
+
+        $existingProject->users()->detach();
+        $existingProject->delete();
 
         return redirect()->back()->with('success', 'Project removed successfully.');
     }
 
     public function removeMember(int $projectId, int $memberId): RedirectResponse
     {
-        Project::findOrFail($projectId)->users()->detach($memberId);
+        $existingProject = Project::find($projectId);
+
+        if (! $existingProject) {
+            redirect()->back()->with('error', 'Project not found.');
+        }
+
+        $existingProject->users()->detach($memberId);
 
         return redirect()->back()->with('success', 'Member removed successfully.');
     }

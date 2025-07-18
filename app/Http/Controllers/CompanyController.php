@@ -21,7 +21,11 @@ class CompanyController extends Controller
 
     public function show(int $id): Response
     {
-        $company = Company::findOrFail($id);
+        $company = Company::find($id);
+
+        if (! $company) {
+            return redirect()->back()->with('error', 'Company not found.');
+        }
 
         return Inertia::render('Company/Company', [
             'company' => $company,
@@ -46,6 +50,10 @@ class CompanyController extends Controller
 
         $existingCompany = Company::find($validated['id']);
 
+        if (! $existingCompany) {
+            return redirect()->back()->with('error', 'Company not found.');
+        }
+
         $existingCompany->update([
             'name' => $validated['name'],
         ]);
@@ -57,7 +65,11 @@ class CompanyController extends Controller
 
     public function destroy(int $id): RedirectResponse
     {
-        $existingCompany = Company::findOrFail($id);
+        $existingCompany = Company::find($id);
+
+        if (! $existingCompany) {
+            return redirect()->back()->with('error', 'Company not found.');
+        }
 
         $existingCompany->delete();
 
