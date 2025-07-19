@@ -197,7 +197,7 @@ export default function Company({ company }) {
                     ]}
                 />
 
-                <main className="flex-1 bg-white border-l rounded pl-5">
+                <main className="flex-1 bg-white border-l rounded">
                     <Accordion>
                         <Accordion.Item defaultOpen>
                             <Accordion.Item.Header>

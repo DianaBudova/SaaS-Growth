@@ -10,7 +10,7 @@ export default function AuthenticatedLayout({ children }) {
 
     return (
         <div className="h-screen flex overflow-hidden bg-gray-100">
-            <aside className="w-64 bg-gray-800 flex flex-col">
+            <aside className="w-64 bg-gray-700 flex flex-col">
                 <div className="h-16 flex items-center justify-center">
                 </div>
                 <nav className="mt-4 flex flex-col flex-grow">

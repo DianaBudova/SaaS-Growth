@@ -2,7 +2,7 @@ import { useState } from "react";
 
 export default function Accordion({ children }) {
     return (
-        <div className="flex flex-col divide-y rounded border overflow-hidden">
+        <div className="flex flex-col divide-y rounded overflow-hidden">
             {children}
         </div>
     );
