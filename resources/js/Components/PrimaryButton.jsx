@@ -10,11 +10,21 @@ export default function PrimaryButton({
     return (
         <button
             {...props}
-            className={
-                `inline-flex items-center rounded border border-transparent bg-gray-800 px-4 py-2.5 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:bg-gray-700 focus:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-gray-900 ${
-                    disabled && 'opacity-25'
-                } ` + className
-            }
+            className={`
+                inline-flex items-center justify-center
+                rounded
+                bg-slate-800
+                px-5 py-3
+                text-sm font-semibold uppercase tracking-wide
+                text-white
+                shadow
+                transition-all duration-200 ease-in-out
+                hover:bg-slate-900 hover:-translate-y-0.5 hover:shadow-md
+                focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2
+                active:bg-slate-800
+                disabled:opacity-50 disabled:cursor-not-allowed
+                ${className}
+            `}
             disabled={disabled || loading}
         >
             {loading ? (
