@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Project;
+use App\Models\ProjectRole;
 use App\Models\User;
 use App\Models\Invitation;
 use App\Services\InvitationService;
 use App\Http\Requests\InviteRequest;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Log;
 
 class InvitationController extends Controller
 {
@@ -16,10 +19,21 @@ class InvitationController extends Controller
         $validated = $request->validated();
 
         try {
+            $project = Project::with('users')
+                ->find($validated['project_id']);
+
+            $isAlreadyJoined = $project->users->contains('email', $validated['email']);
+
+            if ($isAlreadyJoined) {
+                return redirect()->back()->with('info', 'User with email ' . $validated['email'] . ' already in this project.');
+            }
+
             $inviter->send($validated);
 
             return redirect()->back()->with('success', 'Invitation sent successfully.');
         } catch (\Throwable $th) {
+            Log::error($th->getMessage());
+
             return redirect()->back()->with('error', 'Invitation was not sent.');
         }
     }
@@ -47,8 +61,6 @@ class InvitationController extends Controller
             if ($user->email === $invitation->email) {
                 return redirect()->route('project.show', $invitation->project_id)->with('info', 'You are already a member of this project.');
             }
-
-            return redirect()->route('project.show', $invitation->project_id)->with('info', 'User with email ' . $invitation->email . ' is already a member of this project.');
         }
 
         if ($user->email !== $invitation->email) {
@@ -60,7 +72,8 @@ class InvitationController extends Controller
             return redirect()->route('register')->with('error', 'This invitation is not for your email. Please use the email ' . $invitation->email . '.');
         }
 
-        $invitation = $inviter->acceptWithUser($token, $user);
+        $userRole = ProjectRole::where('slug', 'viewer')->first();
+        $invitation = $inviter->acceptWithUser($token, $user, $userRole);
 
         return redirect()->route('project.show', $invitation->project_id)->with('success', 'You have joined the project!');
     }

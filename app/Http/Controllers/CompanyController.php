@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Company;
+use App\Models\CompanyRole;
 use App\Http\Requests\Company\CompanyCreateRequest;
 use App\Http\Requests\Company\CompanyUpdateRequest;
 use Illuminate\Http\Request;
@@ -36,10 +37,24 @@ class CompanyController extends Controller
     {
         $validated = $request->validated();
 
-        Company::create([
+        $userId = auth()->id();
+
+        $createdCompany = Company::create([
             'name' => $validated['name'],
-            'owner_id' => auth()->id(),
+            'owner_id' => $userId,
         ]);
+
+        if (! $createdCompany) {
+            return redirect()->back()->with('error', 'Failed to create company.');
+        }
+
+        $userRole = CompanyRole::where('slug', 'owner')->first();
+
+        if ($userId && $userRole) {
+            $createdCompany->users()->attach($userId, [
+                'role_id' => $userRole->id
+            ]);
+        }
 
         return redirect()->back()->with('success', 'Company created successfully.');
     }
@@ -71,6 +86,7 @@ class CompanyController extends Controller
             return redirect()->back()->with('error', 'Company not found.');
         }
 
+        $existingCompany->users()->detach();
         $existingCompany->delete();
 
         return redirect()->back()->with('success', 'Company deleted successfully.');

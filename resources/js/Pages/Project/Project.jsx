@@ -97,7 +97,7 @@ export default function Project({ project }) {
 
 
 
-    // Exclude
+    // Exclude Member
     const handleExcludeMember = (e, memberId) => {
         e.preventDefault();
 
@@ -161,13 +161,14 @@ export default function Project({ project }) {
                                     <Table
                                         columns={[
                                             { key: 'name', label: 'Member Name' },
+                                            { key: 'role', label: 'Member Role' },
                                             { key: 'email', label: 'Member Email' },
                                             { key: 'actions', label: 'Actions', align: 'right' },
                                         ]}
                                         data={members}
                                         renderRow={(member) => (
                                             <tr key={member.id}>
-                                                <td className="px-6 py-4 whitespace-nowrap text-gray-800 font-medium">
+                                                <Table.Row>
                                                     <button
                                                         type="button"
                                                         className="text-indigo-500 font-bold hover:underline"
@@ -176,13 +177,17 @@ export default function Project({ project }) {
                                                     >
                                                         {member.name ?? '--'}
                                                     </button>
-                                                </td>
+                                                </Table.Row>
 
-                                                <td className="px-6 py-4 whitespace-nowrap text-gray-800 font-medium">
+                                                <Table.Row>
+                                                    {member.pivot?.role?.name ?? '--'}
+                                                </Table.Row>
+
+                                                <Table.Row>
                                                     {member.email ?? '--'}
-                                                </td>
+                                                </Table.Row>
 
-                                                <td className="px-6 py-4 whitespace-nowrap text-gray-800 font-medium">
+                                                <Table.Row>
                                                     <div className="flex justify-end gap-3">
                                                         <DangerButton
                                                             className="!p-2.5"
@@ -194,7 +199,7 @@ export default function Project({ project }) {
                                                             </svg>
                                                         </DangerButton>
                                                     </div>
-                                                </td>
+                                                </Table.Row>
                                             </tr>
                                         )}
                                     />

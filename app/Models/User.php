@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\ProjectUser;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -49,12 +48,15 @@ class User extends Authenticatable
         ];
     }
 
-    public function company() {
-        return $this->belongsTo(Company::class);
+    public function companies() {
+        return $this->belongsToMany(Company::class)
+            ->using(CompanyUser::class)
+            ->withPivot('role_id');
     }
 
     public function projects() {
         return $this->belongsToMany(Project::class)
-            ->using(ProjectUser::class);
+            ->using(ProjectUser::class)
+            ->withPivot('role_id');
     }
 }
