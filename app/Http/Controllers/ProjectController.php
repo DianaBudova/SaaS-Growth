@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Company;
+use App\Models\ProjectRole;
 use App\Models\Project;
+use App\Models\User;
 use App\Http\Requests\Project\ProjectCreateRequest;
 use App\Http\Requests\Project\ProjectUpdateRequest;
 use Inertia\Inertia;
@@ -33,13 +36,27 @@ class ProjectController extends Controller
     {
         $validated = $request->validated();
 
-        Project::create([
+        $createdProject = Project::create([
             'company_id'  => $validated['company_id'],
             'name'        => $validated['name'],
             'description' => $validated['description'] ?? null,
             'start_date'  => $validated['start_date'] ?? null,
             'end_date'    => $validated['end_date'] ?? null,
         ]);
+
+        if (! $createdProject) {
+            return redirect()->back()->with('error', 'Failed to create project.');
+        }
+
+        $userId   = Company::find($validated['company_id'])?->owner_id;
+        $user     = $userId ? User::find($userId) : null;
+        $userRole = ProjectRole::where('slug', 'owner')->first();
+
+        if ($user && $userRole) {
+            $createdProject->users()->attach($userId, [
+                'role_id' => $userRole->id
+            ]);
+        }
 
         return redirect()->back()->with('success', 'Project created successfully.');
     }

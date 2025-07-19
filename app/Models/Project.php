@@ -29,6 +29,7 @@ class Project extends Model
 
     public function users() {
         return $this->belongsToMany(User::class)
-            ->using(ProjectUser::class);
+            ->using(ProjectUser::class)
+            ->withPivot('role_id');
     }
 }

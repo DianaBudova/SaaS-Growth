@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\ProjectRole;
 use App\Models\Invitation;
 use App\Models\User;
 use App\Services\InvitationService;
@@ -49,7 +50,8 @@ class RegisteredUserController extends Controller
         Auth::login($user);
 
         // for invitation acceptance
-        $invitation = $inviter->handlePostRegistrationInvitation($user);
+        $userRole = ProjectRole::where('slug', 'viewer')->first();
+        $invitation = $inviter->handlePostRegistrationInvitation($user, $userRole);
 
         if ($invitation) {
             return redirect()->route('project.show', $invitation->project_id)->with('success', 'You have joined the project!');

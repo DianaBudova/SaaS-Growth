@@ -10,10 +10,12 @@ class CompanyObserver
     public function saved(Company $company)
     {
         Cache::forget('companies');
+        Cache::forget("company_{$company->id}_users");
     }
 
-    public function deleted(Company $company)
+    public function deleting(Company $company)
     {
         Cache::forget('companies');
+        Cache::forget("company_{$company->id}_users");
     }
 }

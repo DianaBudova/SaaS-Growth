@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\ProjectRole;
 use App\Models\User;
 use App\Mail\InviteUserMail;
 use App\Models\Invitation;
@@ -36,15 +37,17 @@ class InvitationService
         return $invitation;
     }
 
-    public function acceptWithUser(string $token, User $user): Invitation
+    public function acceptWithUser(string $token, User $user, Role $userRole): Invitation
     {
         $invitation = $this->accept($token);
-        $invitation->project->users()->attach($user->id);
+        $invitation->project->users()->attach($user->id, [
+            'role_id' => $userRole->id,
+        ]);
 
         return $invitation;
     }
 
-    public function handlePostRegistrationInvitation(User $user): ?Invitation
+    public function handlePostRegistrationInvitation(User $user, Role $userRole): ?Invitation
     {
         $token = session('invitation_token');
 
@@ -54,7 +57,7 @@ class InvitationService
 
         session()->forget('invitation_token');
 
-        return $this->acceptWithUser($token, $user);
+        return $this->acceptWithUser($token, $user, $userRole);
     }
 
     public function isAccepted(string $token): bool

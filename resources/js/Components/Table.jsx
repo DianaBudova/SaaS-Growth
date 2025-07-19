@@ -22,3 +22,11 @@ export default function Table({ columns, data, renderRow }) {
         </div>
     );
 }
+
+Table.Row = function TableRow({ children }) {
+    return (
+        <td className="px-6 py-4 whitespace-nowrap text-gray-800 font-medium">
+            {children}
+        </td>
+    );
+};
