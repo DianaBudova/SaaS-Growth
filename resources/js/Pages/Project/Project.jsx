@@ -69,7 +69,7 @@ export default function Project({ project }) {
     const handleInviteMember = (e) => {
         e.preventDefault();
 
-        router.post('/invitation/invite', data, {
+        router.post('/project/invite', data, {
             onSuccess: () => {
                 setInviteModalVisible(false);
                 resetInvitationForm();

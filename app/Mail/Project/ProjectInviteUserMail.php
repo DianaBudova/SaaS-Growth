@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Mail;
+namespace App\Mail\Project;
 
 use App\Models\Invitation;
 use Illuminate\Bus\Queueable;
@@ -10,7 +10,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class InviteUserMail extends Mailable
+class ProjectInviteUserMail extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -37,9 +37,9 @@ class InviteUserMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            markdown: 'emails.invite-user',
+            markdown: 'emails.project-invite-user',
             with: [
-                'acceptUrl' => route('invitation.accept', $this->invitation->token)
+                'acceptUrl' => route('project.accept', $this->invitation->token)
             ]
         );
     }

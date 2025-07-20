@@ -14,7 +14,7 @@ export default function PrimaryButton({
                 inline-flex items-center justify-center
                 rounded
                 bg-slate-800
-                px-5 py-3
+                px-5 py-2.5
                 text-sm font-semibold uppercase tracking-wide
                 text-white
                 shadow

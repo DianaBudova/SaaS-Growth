@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Project;
 
 use App\Models\Project;
 use App\Models\ProjectRole;
@@ -12,7 +12,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Log;
 
-class InvitationController extends Controller
+class ProjectInvitationController extends Controller
 {
     public function invite(InviteRequest $request, InvitationService $inviter): RedirectResponse
     {

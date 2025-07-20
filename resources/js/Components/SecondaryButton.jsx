@@ -13,7 +13,7 @@ export default function SecondaryButton({
                 inline-flex items-center justify-center
                 rounded border border-gray-300
                 bg-white
-                px-5 py-3
+                px-5 py-2.5
                 text-sm font-semibold uppercase tracking-wide
                 text-gray-700
                 shadow

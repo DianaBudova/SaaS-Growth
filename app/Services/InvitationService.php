@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Models\ProjectRole;
 use App\Models\User;
-use App\Mail\InviteUserMail;
+use App\Mail\Project\ProjectInviteUserMail;
 use App\Models\Invitation;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
@@ -21,7 +21,7 @@ class InvitationService
             'project_id' => $data['project_id'],
         ]);
 
-        Mail::to($data['email'])->send(new InviteUserMail($invitation));
+        Mail::to($data['email'])->send(new ProjectInviteUserMail($invitation));
     }
 
     public function accept(string $token): Invitation
@@ -37,7 +37,7 @@ class InvitationService
         return $invitation;
     }
 
-    public function acceptWithUser(string $token, User $user, Role $userRole): Invitation
+    public function acceptWithUser(string $token, User $user, ProjectRole $userRole): Invitation
     {
         $invitation = $this->accept($token);
         $invitation->project->users()->attach($user->id, [
@@ -47,7 +47,7 @@ class InvitationService
         return $invitation;
     }
 
-    public function handlePostRegistrationInvitation(User $user, Role $userRole): ?Invitation
+    public function handlePostRegistrationInvitation(User $user, ProjectRole $userRole): ?Invitation
     {
         $token = session('invitation_token');
 
