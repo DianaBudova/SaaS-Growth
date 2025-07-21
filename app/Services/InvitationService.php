@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Events\UserJoinedProject;
 use App\Models\ProjectRole;
 use App\Models\User;
 use App\Mail\Project\ProjectInviteUserMail;
@@ -44,6 +45,8 @@ class InvitationService
             'role_id' => $userRole->id,
         ]);
 
+        event(new UserJoinedProject($user, $invitation->project));
+
         return $invitation;
     }
 
@@ -58,12 +61,5 @@ class InvitationService
         session()->forget('invitation_token');
 
         return $this->acceptWithUser($token, $user, $userRole);
-    }
-
-    public function isAccepted(string $token): bool
-    {
-        $invitation = Invitation::where('token', $token)->first();
-
-        return $invitation ? $invitation->accepted : false;
     }
 }
