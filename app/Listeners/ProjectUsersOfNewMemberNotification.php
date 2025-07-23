@@ -6,7 +6,7 @@ use App\Events\UserJoinedProject;
 use App\Mail\Project\UserJoinedProjectMail;
 use Illuminate\Support\Facades\Mail;
 
-class NotifyProjectUsersOfNewMember
+class ProjectUsersOfNewMemberNotification
 {
     /**
      * Handle the event.
