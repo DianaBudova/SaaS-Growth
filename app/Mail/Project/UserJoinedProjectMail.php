@@ -2,6 +2,8 @@
 
 namespace App\Mail\Project;
 
+use App\Models\Project;
+use App\Models\User;
 use App\Models\Invitation;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -10,15 +12,17 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class ProjectInviteUserMail extends Mailable
+class UserJoinedProjectMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public Invitation $invitation;
+    public User $newUser;
+    public Project $project;
 
-    public function __construct(Invitation $invitation)
+    public function __construct(User $newUser, Project $project)
     {
-        $this->invitation = $invitation;
+        $this->newUser = $newUser;
+        $this->project = $project;
     }
 
     /**
@@ -27,7 +31,7 @@ class ProjectInviteUserMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: "You are invited to join project",
+            subject: "Welcome new member {$this->newUser->name} to project {$this->project->name}",
         );
     }
 
@@ -37,10 +41,7 @@ class ProjectInviteUserMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            markdown: 'emails.project_invite_user',
-            with: [
-                'acceptUrl' => route('project.accept', $this->invitation->token)
-            ]
+            markdown: 'emails.user_joined_project'
         );
     }
 
