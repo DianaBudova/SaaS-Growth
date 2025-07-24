@@ -41,7 +41,9 @@ export default function Project({ project }) {
     // Fetch
     const fetchMembers = async () => {
         fetchAPI(`/v1/projects/${project.id}/members`)
-            .then(setMembers)
+            .then((response => {
+                setMembers(response.result);
+            }))
             .catch((err) => setError(err.response?.message ?? err.message))
             .finally(() => setIsLoading(false));
     };

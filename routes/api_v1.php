@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\V1\CompanyController;
 use App\Http\Controllers\Api\V1\ProjectController;
+use App\Http\Controllers\Api\V1\StripeController as ApiStripeController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -15,4 +16,6 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
 
     Route::get('/projects', [ProjectController::class, 'get']);
     Route::get('/projects/{id}/members', [ProjectController::class, 'getMembers']);
+
+    Route::post('/create-payment-intent', [ApiStripeController::class, 'createPaymentIntent']);
 });

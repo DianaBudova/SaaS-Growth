@@ -1,26 +1,24 @@
 import axios from 'axios';
 
-export async function fetchAPI(route) {
-    await axios.get('/sanctum/csrf-cookie', { withCredentials: true });
+export async function fetchAPI(route, { method = 'GET', body = null } = {}) {
+    const isWriteMethod = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method.toUpperCase());
 
-    const { data } = await axios.get(`/api${route}`, {
-        withCredentials: true,
-        headers: { Accept: 'application/json' },
-    });
+    if (isWriteMethod) {
+        await axios.get('/sanctum/csrf-cookie', { withCredentials: true });
+    }
 
-    return data.result;
-}
-
-export async function postAPI(route, body = {}) {
-    await axios.get('/sanctum/csrf-cookie', { withCredentials: true });
-
-    const { data } = await axios.post(`/api${route}`, body, {
+    const config = {
+        method,
+        url: `/api${route}`,
         withCredentials: true,
         headers: {
             Accept: 'application/json',
-            'Content-Type': 'application/json',
+            ...(body && { 'Content-Type': 'application/json' }),
         },
-    });
+        ...(body && { data: JSON.stringify(body) }),
+    };
 
-    return data.result;
+    const { data } = await axios(config);
+
+    return data;
 }

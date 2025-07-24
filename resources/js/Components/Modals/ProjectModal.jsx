@@ -27,7 +27,9 @@ export default function ProjectModal({
     useEffect(() => {
         const fetchCompanies = async () => {
             fetchAPI(`/v1/companies`)
-                .then(setCompanies)
+                .then((response => {
+                    setCompanies(response.result);
+                }))
                 .catch((err) => setError(err.response?.data?.message ?? err.message))
                 .finally(() => setIsLoading(false));
         };
