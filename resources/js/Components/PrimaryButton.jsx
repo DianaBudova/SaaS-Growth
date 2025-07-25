@@ -19,7 +19,7 @@ export default function PrimaryButton({
                 text-white
                 shadow
                 transition-all duration-200 ease-in-out
-                hover:bg-slate-900 hover:-translate-y-0.5 hover:shadow-md
+                hover:bg-slate-900 hover:shadow-md
                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2
                 active:bg-slate-800
                 disabled:opacity-50 disabled:cursor-not-allowed

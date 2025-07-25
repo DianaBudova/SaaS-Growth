@@ -16,18 +16,37 @@ export default function useStripePayment() {
         setLoading(true);
 
         try {
-            const { clientSecret } = await createPaymentIntent(amount);
-
             const cardElement = elements.getElement(CardElement);
 
-            const { error, paymentIntent } = await stripe.confirmCardPayment(
+            if (!cardElement) {
+                throw new Error('Card element not found');
+            }
+
+
+
+            const { paymentMethod, error: paymentMethodError } = await stripe.createPaymentMethod({
+                type: 'card',
+                card: cardElement!,
+            });
+
+            if (paymentMethodError) {
+                throw new Error(paymentMethodError.message);
+            }
+
+
+
+            const { clientSecret } = await createPaymentIntent(amount, paymentMethod.id);            
+
+            const { paymentIntent, error: paymentIntentError } = await stripe.confirmCardPayment(
                 clientSecret,
                 { payment_method: { card: cardElement! } },
             );
 
-            if (error) {
-                throw new Error(error.message);
+            if (paymentIntentError) {
+                throw new Error(paymentIntentError.message);
             }
+
+
 
             return paymentIntent?.status === 'succeeded';
         } finally {

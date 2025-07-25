@@ -4,15 +4,18 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Stripe\Stripe;
-use Stripe\PaymentIntent;
+use Laravel\Cashier\Cashier;
 
 class StripeController extends Controller
 {
     public function createPaymentIntent(Request $request)
     {
         try {
-            Stripe::setApiKey(env('STRIPE_SECRET'));
+            $user = $request->user();
+
+            if (!$user) {
+                return response()->json(['error' => 'Unauthorized'], 401);
+            }
 
             $amount = $request->input('amount');
 
@@ -20,9 +23,24 @@ class StripeController extends Controller
                 return response()->json(['error' => 'Invalid amount'], 400);
             }
 
-            $paymentIntent = PaymentIntent::create([
+            $paymentMethodId = $request->input('payment_method');
+
+            if (!$paymentMethodId) {
+                return response()->json(['error' => 'Payment method is required'], 400);
+            }
+
+            $user->createOrGetStripeCustomer();
+
+            $stripe = Cashier::stripe();
+
+            $paymentIntent = $stripe->paymentIntents->create([
                 'amount' => intval($amount),
                 'currency' => 'usd',
+                'customer' => $user->stripe_id,
+                'automatic_payment_methods' => [
+                    'enabled' => true,
+                    'allow_redirects' => 'never',
+                ],
             ]);
 
             return response()->json([
