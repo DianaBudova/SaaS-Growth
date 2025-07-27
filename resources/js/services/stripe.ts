@@ -1,17 +1,18 @@
 import { fetchAPI } from '@/helpers';
 
-interface PaymentIntentResult {
-    clientSecret: string;
+interface SubscribeResult {
+    status: 'active' | 'requires_action';
+    redirect_url?: string;
 }
 
-export async function createPaymentIntent(amount: number, paymentMethodId: string): Promise<PaymentIntentResult> {
-    const res = await fetchAPI('/v1/create-payment-intent', {
+export async function subscribe(priceId: string, paymentMethodId: string): Promise<SubscribeResult> {
+    const res = await fetchAPI('/v1/subscribe', {
         method: 'POST',
         body: {
-            amount,
-            payment_method: paymentMethodId,
+            stripe_price_id: priceId,
+            payment_method: paymentMethodId
         },
     });
 
-    return res;
+    return res as SubscribeResult;
 }

@@ -17,5 +17,5 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::get('/projects', [ProjectController::class, 'get']);
     Route::get('/projects/{id}/members', [ProjectController::class, 'getMembers']);
 
-    Route::post('/create-payment-intent', [ApiStripeController::class, 'createPaymentIntent']);
+    Route::post('/subscribe', [ApiStripeController::class, 'subscribe']);
 });

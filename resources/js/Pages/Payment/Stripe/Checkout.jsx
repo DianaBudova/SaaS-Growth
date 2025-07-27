@@ -1,15 +1,18 @@
 import React from 'react';
+import { usePage } from '@inertiajs/react';
 import { CardElement } from '@stripe/react-stripe-js';
 import PrimaryButton from '@/Components/PrimaryButton';
-import useStripePayment from '@/hooks/useStripePayment';
+import useStripeSubscription from '@/hooks/useStripeSubscription';
 
-export default function StripeCheckout({ amount }) {
-    const { pay, loading } = useStripePayment();
+export default function Checkout() {
+    const { price_id } = usePage().props;
+
+    const { startSubscription, loading } = useStripeSubscription();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const ok = await pay(amount);
+        const ok = await startSubscription(price_id);
 
         alert(ok ? 'Success!' : 'Payment failed');
     };

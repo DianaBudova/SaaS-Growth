@@ -8,48 +8,42 @@ use Laravel\Cashier\Cashier;
 
 class StripeController extends Controller
 {
-    public function createPaymentIntent(Request $request)
+    public function subscribe(Request $request)
     {
+        $user = $request->user();
+
+        if (!$user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+
+        $priceId = $request->input('stripe_price_id');
+
+        if (!$priceId) {
+            return response()->json(['error' => 'Missing plan identifier.'], 422);
+        }
+
+        $paymentMethodId = $request->input('payment_method');
+
+        if (!$paymentMethodId) {
+            return response()->json(['error' => 'Payment method is required'], 422);
+        }
+
+        $user->createOrGetStripeCustomer();
+
+        $user->addPaymentMethod($paymentMethodId);
+        $user->updateDefaultPaymentMethod($paymentMethodId);
+
         try {
-            $user = $request->user();
-
-            if (!$user) {
-                return response()->json(['error' => 'Unauthorized'], 401);
-            }
-
-            $amount = $request->input('amount');
-
-            if (!is_numeric($amount) || $amount <= 0) {
-                return response()->json(['error' => 'Invalid amount'], 400);
-            }
-
-            $paymentMethodId = $request->input('payment_method');
-
-            if (!$paymentMethodId) {
-                return response()->json(['error' => 'Payment method is required'], 400);
-            }
-
-            $user->createOrGetStripeCustomer();
-
-            $stripe = Cashier::stripe();
-
-            $paymentIntent = $stripe->paymentIntents->create([
-                'amount' => intval($amount),
-                'currency' => 'usd',
-                'customer' => $user->stripe_id,
-                'automatic_payment_methods' => [
-                    'enabled' => true,
-                    'allow_redirects' => 'never',
-                ],
-            ]);
+            $subscription = $user->newSubscription('default', $priceId)
+                ->create($paymentMethodId);      // chainable: ->endsAt()
 
             return response()->json([
-                'clientSecret' => $paymentIntent->client_secret,
+                'status'       => 'active',
+                'subscription' => $subscription
             ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'error' => $e->getMessage(),
-            ], 500);
+        } catch (\Throwable $e) {
+            report($e);
+            return response()->json(['error' => 'Unable to create subscription.'], 500);
         }
     }
 }
