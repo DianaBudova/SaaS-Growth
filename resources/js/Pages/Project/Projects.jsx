@@ -41,7 +41,9 @@ export default function Projects({ projects: initialProjects = [] }) {
     // Fetch
     const fetchProjects = async () => {
         fetchAPI(`/v1/projects`)
-            .then(setProjects)
+            .then((response => {
+                setProjects(response.result);
+            }))
             .catch((err) => setError(err.response?.message ?? err.message))
             .finally(() => setIsLoading(false));
     };

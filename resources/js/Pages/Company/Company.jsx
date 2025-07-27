@@ -63,14 +63,18 @@ export default function Company({ company }) {
     // Fetch
     const fetchProjects = async () => {
         fetchAPI(`/v1/companies/${company.id}/projects`)
-            .then(setProjects)
+            .then((response => {
+                setProjects(response.result);
+            }))
             .catch((err) => setProjectsError(err.response?.message ?? err.message))
             .finally(() => setIsProjectsLoading(false));
     };
 
     const fetchMembers = async () => {
         fetchAPI(`/v1/companies/${company.id}/members`)
-            .then(setMembers)
+            .then((response => {
+                setMembers(response.result);
+            }))
             .catch((err) => setMembersError(err.response?.message ?? err.message))
             .finally(() => setIsMembersLoading(false));
     };

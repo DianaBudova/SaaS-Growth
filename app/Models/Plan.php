@@ -13,7 +13,20 @@ class Plan extends Model
      */
     protected $fillable = [
         'name',
-        'price_monthly',
-        'price_yearly',
+        'description',
+        'stripe_price_id',
+        'price',
+        'interval',
+        'active',
+    ];
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'price' => 'decimal:2',
+        'active' => 'boolean',
     ];
 }

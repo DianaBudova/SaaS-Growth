@@ -37,7 +37,9 @@ export default function Companies({ companies: initialCompanies = [] }) {
     // Fetch
     const fetchCompanies = async () => {
         fetchAPI(`/v1/companies`)
-            .then(setCompanies)
+            .then((response => {
+                setCompanies(response.result);
+            }))
             .catch((err) => setError(err.response?.message ?? err.message))
             .finally(() => setIsLoading(false));
     };
