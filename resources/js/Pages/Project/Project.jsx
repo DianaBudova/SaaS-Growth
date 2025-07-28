@@ -8,8 +8,9 @@ import DangerButton from '@/Components/DangerButton';
 import { router, useForm } from '@inertiajs/react';
 import { fetchAPI } from '@/helpers';
 import InviteModal from '@/Components/Modals/InviteModal';
+import Tag from '@/Components/Tag';
 
-export default function Project({ project }) {
+export default function Project({ project, auth }) {
     // States
     const [members, setMembers] = useState([]);
 
@@ -115,6 +116,23 @@ export default function Project({ project }) {
 
 
 
+    // Helpers
+    const hasAuthUser = auth?.user !== undefined;
+
+    const isMemberYou = (member) => {
+        if (
+            ! hasAuthUser
+            || ! auth.user?.email
+            || ! member?.email
+        ) {
+            return false;
+        }
+
+        return member.email === auth.user.email;
+    };
+
+
+
     return (
         <AuthenticatedLayout>
             <div className="flex flex-col lg:flex-row h-full">
@@ -171,14 +189,19 @@ export default function Project({ project }) {
                                         renderRow={(member) => (
                                             <tr key={member.id}>
                                                 <Table.Row>
-                                                    <button
-                                                        type="button"
-                                                        className="text-indigo-500 font-bold hover:underline"
-                                                        onClick={(e) => handleShowMember(e, member.id)}
-                                                        disabled={processing}
-                                                    >
-                                                        {member.name ?? '--'}
-                                                    </button>
+                                                    <div className="flex items-center gap-2">
+                                                        <button
+                                                            type="button"
+                                                            className="text-indigo-500 font-bold hover:underline"
+                                                            onClick={(e) => handleShowMember(e, member.id)}
+                                                            disabled={processing}
+                                                        >
+                                                            {member.name ?? '--'}
+                                                        </button>{' '}
+                                                        {isMemberYou(member) &&
+                                                            <Tag color="amber">You</Tag>
+                                                        }
+                                                    </div>
                                                 </Table.Row>
 
                                                 <Table.Row>

@@ -29,6 +29,9 @@ class ProjectController extends Controller
 
         return Inertia::render('Project/Project', [
             'project' => $existingProject,
+            'auth' => [
+                'user' => auth()->user(),
+            ],
         ]);
     }
 
