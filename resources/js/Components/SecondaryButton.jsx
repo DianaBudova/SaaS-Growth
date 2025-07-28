@@ -11,19 +11,18 @@ export default function SecondaryButton({
             type={type}
             className={`
                 inline-flex items-center justify-center
-                rounded border border-brand-secondaryBorder
-                bg-brand-secondary
+                rounded border border-gray-300
+                bg-white
                 px-5 py-2.5
                 text-sm font-semibold uppercase tracking-wide
-                text-brand-secondaryText
+                text-gray-700
                 shadow
                 transition-all duration-200 ease-in-out
-                hover:bg-brand-secondaryHover hover:shadow-md
-                focus:outline-none focus:ring-2 focus:ring-brand-primaryLight focus:ring-offset-2
-                disabled:opacity-50 disabled:cursor-not-allowed
-                ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
-                ${className}
-            `}
+                hover:bg-gray-50 hover:shadow-md
+                focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-25 ${
+                    disabled && 'opacity-25'
+                } ` + className
+            }
             disabled={disabled}
         >
             {children}

@@ -10,7 +10,7 @@ export default function Modal({
     show = false,
     maxWidth = '2xl',
     closeable = true,
-    onClose = () => {},
+    onClose = () => { },
 }) {
     const close = () => {
         if (closeable) {
@@ -41,7 +41,7 @@ export default function Modal({
                     leaveFrom="opacity-100"
                     leaveTo="opacity-0"
                 >
-                    <div className="absolute inset-0 bg-brand-sidebar/70" />
+                    <div className="absolute inset-0 bg-gray-500/75" />
                 </TransitionChild>
 
                 <TransitionChild
@@ -65,17 +65,17 @@ export default function Modal({
 
 Modal.Header = function ModalHeader({ title, onClose, closeable = true }) {
     return (
-        <div className="flex items-center justify-between px-6 py-4 bg-gradient-to-r from-brand-primary to-brand-primaryLight">
-            <h2 className="text-lg font-semibold text-brand-textLight">{title}</h2>
+        <div className="flex items-center justify-between px-6 py-4 bg-gradient-to-r from-indigo-700 to-blue-900">
+            <h2 className="text-lg font-semibold text-white">{title}</h2>
             {closeable && (
                 <button
                     onClick={onClose}
-                    className="text-brand-textLight hover:text-white transition"
+                    className="text-gray-400 hover:text-gray-600 transition"
                     aria-label="Close"
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        className="w-6 h-6"
+                        className="w-6 h-6 text-white hover:text-gray-300 transition"
                         viewBox="0 0 24 24"
                         fill="currentColor"
                     >
@@ -92,7 +92,7 @@ Modal.Header = function ModalHeader({ title, onClose, closeable = true }) {
 };
 
 Modal.Content = function ModalContent({ children }) {
-    return <div className="bg-brand-bg text-brand-textDark p-6">{children}</div>;
+    return <div className="bg-white p-6">{children}</div>;
 };
 
 Modal.Footer = function ModalFooter({ children }) {

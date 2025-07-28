@@ -5,13 +5,12 @@ import FlashLayout from "@/Layouts/FlashLayout";
 
 export default function Plans({ plans }) {
     const [isYearly, setIsYearly] = useState(true);
-
     const interval = isYearly ? "yearly" : "monthly";
     const filteredPlans = plans.filter((plan) => plan.interval === interval);
 
     return (
-        <div className="relative min-h-screen w-full overflow-hidden bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px]">
-            <div class="absolute left-0 right-0 top-0 -z-10 m-auto h-[450px] w-[850px] rounded-full bg-indigo-300 opacity-20 blur-[100px]"></div>
+        <div className="relative min-h-screen w-full overflow-hidden">
+            <div className="absolute top-0 z-[-2] h-screen w-screen bg-white bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.3),rgba(255,255,255,0))]" />
 
             <section className="relative z-10 mx-auto max-w-3xl p-8">
                 <FlashLayout>
@@ -19,9 +18,9 @@ export default function Plans({ plans }) {
 
                     <div className="mb-8 flex justify-center items-center gap-3">
                         <span
-                            className={`text-base transition-colors
-                                ${!isYearly ? "text-indigo-500 font-semibold" : "text-stone-400"}
-                            `}
+                            className={`text-base transition-colors ${
+                                !isYearly ? "text-indigo-500 font-semibold" : "text-stone-400"
+                            }`}
                         >
                             Monthly
                         </span>
@@ -29,19 +28,17 @@ export default function Plans({ plans }) {
                         <Toggle checked={isYearly} onChange={setIsYearly} />
 
                         <span
-                            className={`text-base transition-colors
-                                ${isYearly ? "text-indigo-500 font-semibold" : "text-stone-400"}
-                            `}
+                            className={`text-base transition-colors ${
+                                isYearly ? "text-indigo-500 font-semibold" : "text-stone-400"
+                            }`}
                         >
                             Yearly
                         </span>
                     </div>
 
-                    <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-                        {filteredPlans.map((plan) => (
-                            <Card key={plan.interval + plan.name} plan={plan} />
-                        ))}
-                    </div>
+                    {filteredPlans.map((plan) => (
+                        <Card key={plan.interval + plan.name} plan={plan} />
+                    ))}
                 </FlashLayout>
             </section>
         </div>
