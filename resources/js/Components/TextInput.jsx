@@ -20,11 +20,19 @@ export default forwardRef(function TextInput(
         <input
             {...props}
             type={type}
-            className={
-                'rounded border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 ' +
-                className
-            }
             ref={localRef}
+            className={`
+                rounded
+                border border-brand-border
+                bg-brand-bg
+                text-brand-textDark
+                shadow-sm
+                placeholder:text-brand-textMuted
+                focus:border-brand-primaryLight
+                focus:ring-1 focus:ring-brand-primaryLight
+                disabled:bg-gray-100 disabled:cursor-not-allowed
+                ${className}
+            `}
         />
     );
 });

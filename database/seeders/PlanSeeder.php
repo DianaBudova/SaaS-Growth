@@ -27,6 +27,20 @@ class PlanSeeder extends Seeder
                 'interval' => 'yearly',
                 'active' => true,
             ],
+            [
+                'name' => 'Professional Plan',
+                'stripe_price_id' => 'price_1RpVERH0N9gUKH3ikYZECsFt',
+                'price' => 19.00,
+                'interval' => 'monthly',
+                'active' => true,
+            ],
+            [
+                'name' => 'Professional Plan',
+                'stripe_price_id' => 'price_1RpVEzH0N9gUKH3isJzCKCjW',
+                'price' => 192.00,
+                'interval' => 'yearly',
+                'active' => true,
+            ],
         ];
 
         foreach ($plans as $plan) {

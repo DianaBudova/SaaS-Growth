@@ -13,16 +13,16 @@ import ResourceSidebar from '@/Components/ResourceSidebar';
 export default function Company({ company }) {
     // States
     const [projects, setProjects] = useState([]);
-    const [members, setMembers]   = useState([]);
+    const [members, setMembers] = useState([]);
 
     const [createProjectModalVisible, setCreateProjectModalVisible] = useState(false);
-    const [editProjectModalVisible, setEditProjectModalVisible]     = useState(false);
-    const [inviteMemberModalVisible, setInviteMemberModalVisible]   = useState(false);
+    const [editProjectModalVisible, setEditProjectModalVisible] = useState(false);
+    const [inviteMemberModalVisible, setInviteMemberModalVisible] = useState(false);
 
     const [isProjectsLoading, setIsProjectsLoading] = useState(true);
-    const [isMembersLoading, setIsMembersLoading]   = useState(true);
-    const [projectsError, setProjectsError]         = useState(null);
-    const [membersError, setMembersError]           = useState(null);
+    const [isMembersLoading, setIsMembersLoading] = useState(true);
+    const [projectsError, setProjectsError] = useState(null);
+    const [membersError, setMembersError] = useState(null);
 
 
 
@@ -54,8 +54,8 @@ export default function Company({ company }) {
     } = useForm(initialProjectFormState);
 
     // Form Resets
-    const resetCompanyForm    = () => setData(initialCompanyFormState);
-    const resetProjectForm    = () => setData(initialProjectFormState);
+    const resetCompanyForm = () => setData(initialCompanyFormState);
+    const resetProjectForm = () => setData(initialProjectFormState);
     const resetInvitationForm = () => setData(initialInvitationFormState);
 
 
@@ -195,18 +195,18 @@ export default function Company({ company }) {
                     title={company.name}
                     meta={[
                         { label: 'Company ID', value: company.id },
-                        { label: 'Owner ID',   value: company.owner_id },
-                        { label: 'Created',    value: new Date(company.created_at).toLocaleDateString() },
-                        { label: 'Updated',    value: new Date(company.updated_at).toLocaleDateString() },
+                        { label: 'Owner ID', value: company.owner_id },
+                        { label: 'Created', value: new Date(company.created_at).toLocaleDateString() },
+                        { label: 'Updated', value: new Date(company.updated_at).toLocaleDateString() },
                     ]}
                 />
 
-                <main className="flex-1 bg-white border-l rounded">
+                <main className="flex-1 bg-brand-bg border-l rounded">
                     <Accordion>
                         <Accordion.Item defaultOpen>
                             <Accordion.Item.Header>
                                 <span className="text-xl font-semibold">Projects</span>
-                                <p className="mt-1 text-sm text-gray-600">
+                                <p className="mt-1 text-sm text-brand-textMuted">
                                     View and manage your company's projects.
                                 </p>
                             </Accordion.Item.Header>
@@ -223,13 +223,11 @@ export default function Company({ company }) {
 
                                 {isProjectsLoading ? (
                                     <div className="flex flex-col justify-center items-center space-y-2 py-10">
-                                        <div className="w-8 h-8 border-4 border-indigo-500 border-dashed rounded-full animate-spin"></div>
-                                        <span className="text-gray-600">Loading projects...</span>
+                                        <div className="w-8 h-8 border-4 border-brand-primary border-dashed rounded-full animate-spin"></div>
+                                        <span className="text-brand-textMuted">Loading projects...</span>
                                     </div>
                                 ) : projectsError ? (
-                                    <div className="text-red-500 text-center py-10">
-                                        {projectsError}
-                                    </div>
+                                    <div className="text-brand-danger text-center py-10">{projectsError}</div>
                                 ) : projects.length > 0 ? (
                                     <Table
                                         columns={[
@@ -245,14 +243,13 @@ export default function Company({ company }) {
                                                 <Table.Row>
                                                     <button
                                                         type="button"
-                                                        className="text-indigo-500 font-bold hover:underline"
+                                                        className="text-brand-primary font-bold hover:underline"
                                                         onClick={(e) => handleShowProject(e, project.id)}
                                                         disabled={processing}
                                                     >
                                                         {project.name ?? '--'}
                                                     </button>
                                                 </Table.Row>
-
                                                 <Table.Row>
                                                     {project.description ?? '--'}
                                                 </Table.Row>
@@ -288,13 +285,13 @@ export default function Company({ company }) {
                                         )}
                                     />
                                 ) : (
-                                    <div className="text-gray-600 text-center py-10 border-2 border-dashed rounded-lg">
+                                    <div className="text-brand-textMuted text-center py-10 border-2 border-dashed border-brand-border rounded-lg">
                                         No projects in this company yet. Click{' '}
                                         <button
                                             type="button"
                                             onClick={openCreateProjectModal}
                                             disabled={processing}
-                                            className="text-indigo-500 font-medium hover:underline"
+                                            className="text-brand-primaryLight font-medium hover:underline"
                                         >
                                             here
                                         </button>{' '}
@@ -307,7 +304,7 @@ export default function Company({ company }) {
                         <Accordion.Item defaultOpen>
                             <Accordion.Item.Header>
                                 <span className="text-xl font-semibold">Members</span>
-                                <p className="mt-1 text-sm text-gray-600">
+                                <p className="mt-1 text-sm text-brand-textMuted">
                                     View and manage your company's members.
                                 </p>
                             </Accordion.Item.Header>
@@ -324,11 +321,11 @@ export default function Company({ company }) {
 
                                 {isMembersLoading ? (
                                     <div className="flex flex-col justify-center items-center space-y-2 py-10">
-                                        <div className="w-8 h-8 border-4 border-indigo-500 border-dashed rounded-full animate-spin"></div>
-                                        <span className="text-gray-600">Loading members...</span>
+                                        <div className="w-8 h-8 border-4 border-brand-primary border-dashed rounded-full animate-spin"></div>
+                                        <span className="text-brand-textMuted">Loading members...</span>
                                     </div>
                                 ) : membersError ? (
-                                    <div className="text-red-500 text-center py-10">
+                                    <div className="text-brand-error text-center py-10">
                                         {membersError}
                                     </div>
                                 ) : members.length > 0 ? (
@@ -345,7 +342,7 @@ export default function Company({ company }) {
                                                 <Table.Row>
                                                     <button
                                                         type="button"
-                                                        className="text-indigo-500 font-bold hover:underline"
+                                                        className="text-brand-primaryLight font-bold hover:underline"
                                                         onClick={(e) => handleShowMember(e, member.id)}
                                                         disabled={processing}
                                                     >
@@ -378,13 +375,13 @@ export default function Company({ company }) {
                                         )}
                                     />
                                 ) : (
-                                    <div className="text-gray-600 text-center py-10 border-2 border-dashed rounded-lg">
+                                    <div className="text-brand-textMuted text-center py-10 border-2 border-dashed border-brand-border rounded-lg">
                                         No members in this company yet. Click{' '}
                                         <button
                                             type="button"
                                             onClick={openCreateProjectModal}
                                             disabled={processing}
-                                            className="text-indigo-500 font-medium hover:underline"
+                                            className="text-brand-primaryLight font-medium hover:underline"
                                         >
                                             here
                                         </button>{' '}

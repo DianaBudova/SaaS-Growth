@@ -2,7 +2,7 @@ import { useState } from "react";
 
 export default function Accordion({ children }) {
     return (
-        <div className="flex flex-col divide-y rounded overflow-hidden">
+        <div className="flex flex-col divide-y divide-brand-border rounded overflow-hidden">
             {children}
         </div>
     );
@@ -21,7 +21,7 @@ Accordion.Item = function AccordionItem({ children, defaultOpen = false }) {
             <button
                 type="button"
                 onClick={() => setIsOpen(!isOpen)}
-                className={`w-full flex justify-between items-center px-5 py-4 text-left font-medium text-gray-800 hover:bg-gray-50 transition ${isOpen ? "bg-gray-100" : ""}`}
+                className={`w-full flex justify-between items-center px-5 py-4 text-left font-medium text-stone-800 hover:bg-brand-border transition ${isOpen ? "bg-brand-border/40" : ""}`}
             >
                 {header}
 
@@ -54,7 +54,7 @@ Accordion.Item.Header = function AccordionItemHeader({ children }) {
 Accordion.Item.Content = function AccordionItemContent({ children }) {
     return (
         <div className="overflow-hidden">
-            <div className="px-5 py-4">
+            <div className="px-5 py-4 bg-brand-bg text-stone-800">
                 {children}
             </div>
         </div>
