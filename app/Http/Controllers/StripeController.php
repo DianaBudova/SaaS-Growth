@@ -25,8 +25,8 @@ class StripeController extends Controller
         return Inertia::render('Payment/Stripe/Success');
     }
 
-    public function cancel()
+    public function failed()
     {
-        return Inertia::render('Payment/Stripe/Cancel');
+        return Inertia::render('Payment/Stripe/Failed');
     }
 }

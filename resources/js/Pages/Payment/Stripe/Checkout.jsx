@@ -1,5 +1,5 @@
 import React from 'react';
-import { usePage } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
 import { CardElement } from '@stripe/react-stripe-js';
 import PrimaryButton from '@/Components/PrimaryButton';
 import useStripeSubscription from '@/hooks/useStripeSubscription';
@@ -14,7 +14,14 @@ export default function Checkout() {
 
         const ok = await startSubscription(price_id);
 
-        alert(ok ? 'Success!' : 'Payment failed');
+        const redirectUrl = ok ? '/payment/success' : '/payment/failed';
+        redirectTo(redirectUrl);
+    };
+
+    const redirectTo = (url) => {
+        router.visit(url, {
+            replace: true,
+        });
     };
 
     return (

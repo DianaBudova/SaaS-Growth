@@ -12,7 +12,7 @@ use Inertia\Inertia;
 
 Route::prefix('payment')->group(function () {
     Route::get('/success', [StripeController::class, 'success'])->name('stripe.success');
-    Route::get('/cancel',  [StripeController::class, 'cancel'])->name('stripe.cancel');
+    Route::get('/failed',  [StripeController::class, 'failed'])->name('stripe.failed');
 });
 
 Route::middleware('auth')->group(function () {

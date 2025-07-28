@@ -21,7 +21,7 @@ Accordion.Item = function AccordionItem({ children, defaultOpen = false }) {
             <button
                 type="button"
                 onClick={() => setIsOpen(!isOpen)}
-                className={`w-full flex justify-between items-center px-5 py-4 text-left font-medium text-gray-800 hover:bg-gray-50 transition ${isOpen ? "bg-gray-100" : ""}`}
+                className={`w-full flex justify-between items-center px-5 py-4 text-left font-medium text-stone-800 hover:bg-stone-50 transition ${isOpen ? "bg-stone-100" : ""}`}
             >
                 {header}
 

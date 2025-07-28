@@ -126,8 +126,8 @@ export default function Companies({ companies: initialCompanies = [] }) {
         <AuthenticatedLayout>
             <div className="flex items-center justify-between mb-6">
                 <div>
-                    <h1 className="text-lg font-medium text-gray-900">Companies</h1>
-                    <p className="mt-1 text-sm text-gray-600">
+                    <h1 className="text-lg font-medium text-stone-900">Companies</h1>
+                    <p className="mt-1 text-sm text-stone-600">
                         Here are the companies you belong to.
                     </p>
                 </div>
@@ -140,7 +140,7 @@ export default function Companies({ companies: initialCompanies = [] }) {
             {isLoading ? (
                 <div className="flex flex-col justify-center items-center space-y-2 py-10">
                     <div className="w-8 h-8 border-4 border-indigo-500 border-dashed rounded-full animate-spin"></div>
-                    <span className="text-gray-600">Loading companies...</span>
+                    <span className="text-stone-600">Loading companies...</span>
                 </div>
             ) : error ? (
                 <div className="text-red-500 text-center py-10">
@@ -155,7 +155,7 @@ export default function Companies({ companies: initialCompanies = [] }) {
                     data={companies}
                     renderRow={(company) => (
                         <tr key={company.id}>
-                            <td className="px-6 py-4 whitespace-nowrap text-gray-800 font-medium">
+                            <td className="px-6 py-4 whitespace-nowrap text-stone-800 font-medium">
                                 <button
                                     type="button"
                                     className="text-indigo-500 font-bold hover:underline"
@@ -165,7 +165,7 @@ export default function Companies({ companies: initialCompanies = [] }) {
                                     {company.name}
                                 </button>
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-gray-800 font-medium">
+                            <td className="px-6 py-4 whitespace-nowrap text-stone-800 font-medium">
                                 <div className="flex justify-end gap-3">
                                     <SecondaryButton
                                         disabled={processing}
@@ -188,7 +188,7 @@ export default function Companies({ companies: initialCompanies = [] }) {
                     )}
                 />
             ) : (
-                <div className="text-gray-600 text-center py-10 border-2 border-dashed rounded-lg">
+                <div className="text-stone-600 text-center py-10 border-2 border-dashed rounded-lg">
                     No companies yet. Click{' '}
                     <button
                         type="button"

@@ -6,14 +6,15 @@ import FlashLayout from './FlashLayout';
 
 export default function AuthenticatedLayout({ children }) {
     return (
-        <div className="h-screen flex overflow-hidden bg-gray-100">
-            <aside className="w-64 bg-gray-700 flex flex-col">
+        <div className="h-screen flex overflow-hidden bg-stone-100">
+            <aside className="w-64 bg-stone-800 flex flex-col">
                 <div className="h-16 flex items-center justify-center">
                 </div>
                 <nav className="mt-4 flex flex-col flex-grow">
-                    <ResponsiveNavLink href="/dashboard" className="px-6 py-3 text-white">Dashboard</ResponsiveNavLink>
-                    <ResponsiveNavLink href="/company" className="px-6 py-3 text-white">Companies</ResponsiveNavLink>
-                    <ResponsiveNavLink href="/project" className="px-6 py-3 text-white">Projects</ResponsiveNavLink>
+                    <ResponsiveNavLink href="/dashboard" className="px-6 py-3">Dashboard</ResponsiveNavLink>
+                    <ResponsiveNavLink href="/company" className="px-6 py-3">Companies</ResponsiveNavLink>
+                    <ResponsiveNavLink href="/project" className="px-6 py-3">Projects</ResponsiveNavLink>
+                    <ResponsiveNavLink href="/plans" className="px-6 py-3">Upgrade Plan</ResponsiveNavLink>
                 </nav>
             </aside>
 

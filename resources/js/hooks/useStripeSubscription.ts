@@ -24,12 +24,7 @@ export default function useStripeSubscription() {
             });
             if (error || !paymentMethod) throw new Error(error?.message || 'Unable to create payment method');
 
-            const { status, redirect_url } = await subscribe(priceId, paymentMethod.id);
-
-            if (status === 'requires_action' && redirect_url) {
-                window.location.href = redirect_url;
-                return false;
-            }
+            const { status } = await subscribe(priceId, paymentMethod.id);
 
             return status === 'active';
         } catch (e) {

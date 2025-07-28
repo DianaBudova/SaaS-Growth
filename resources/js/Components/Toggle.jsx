@@ -3,7 +3,7 @@ export default function Toggle({ checked, onChange }) {
         <button
             onClick={() => onChange(!checked)}
             className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors
-                ${checked ? "bg-indigo-600" : "bg-gray-300"}
+                ${checked ? "bg-indigo-600" : "bg-stone-300"}
             `}
             role="switch"
             aria-checked={checked}
