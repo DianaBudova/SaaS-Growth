@@ -15,30 +15,30 @@ class PlanSeeder extends Seeder
         $plans = [
             [
                 'name' => 'Starter Plan',
-                'stripe_price_id' => 'price_1Roq7cH0N9gUKH3iUbpiruz7',
+                'stripe_price_id' => config('plans.starter.month.stripe_price_id'),
                 'price' => 9.00,
-                'interval' => 'monthly',
+                'interval' => 'month',
                 'active' => true,
             ],
             [
                 'name' => 'Starter Plan',
-                'stripe_price_id' => 'price_1Roq8fH0N9gUKH3igt6Kq2JJ',
+                'stripe_price_id' => config('plans.starter.year.stripe_price_id'),
                 'price' => 72.00,
-                'interval' => 'yearly',
+                'interval' => 'year',
                 'active' => true,
             ],
             [
                 'name' => 'Professional Plan',
-                'stripe_price_id' => 'price_1RpVERH0N9gUKH3ikYZECsFt',
+                'stripe_price_id' => config('plans.professional.month.stripe_price_id'),
                 'price' => 19.00,
-                'interval' => 'monthly',
+                'interval' => 'month',
                 'active' => true,
             ],
             [
                 'name' => 'Professional Plan',
-                'stripe_price_id' => 'price_1RpVEzH0N9gUKH3isJzCKCjW',
+                'stripe_price_id' => config('plans.professional.year.stripe_price_id'),
                 'price' => 192.00,
-                'interval' => 'yearly',
+                'interval' => 'year',
                 'active' => true,
             ],
         ];

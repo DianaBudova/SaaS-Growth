@@ -9,7 +9,7 @@ import { StepBack } from "lucide-react";
 export default function Plans({ plans }) {
     const [isYearly, setIsYearly] = useState(true);
 
-    const interval = isYearly ? "yearly" : "monthly";
+    const interval = isYearly ? "year" : "month";
     const filteredPlans = plans.filter((plan) => plan.interval === interval);
 
     const handleBack = () => {

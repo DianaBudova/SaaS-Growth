@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
             CompanyRoleSeeder::class,
             ProjectRoleSeeder::class,
             PlanSeeder::class,
+            PlanFeatureSeeder::class,
         ]);
     }
 }

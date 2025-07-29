@@ -35,7 +35,9 @@ class StripeController extends Controller
 
         try {
             $subscription = $user->newSubscription('default', $priceId)
-                ->create($paymentMethodId);      // chainable: ->endsAt()
+                ->create($paymentMethodId);
+
+            $subscription->cancel();
 
             return response()->json([
                 'status'       => 'active',
