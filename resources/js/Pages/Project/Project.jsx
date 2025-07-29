@@ -8,8 +8,9 @@ import DangerButton from '@/Components/DangerButton';
 import { router, useForm } from '@inertiajs/react';
 import { fetchAPI } from '@/helpers';
 import InviteModal from '@/Components/Modals/InviteModal';
+import Tag from '@/Components/Tag';
 
-export default function Project({ project }) {
+export default function Project({ project, auth }) {
     // States
     const [members, setMembers] = useState([]);
 
@@ -115,6 +116,23 @@ export default function Project({ project }) {
 
 
 
+    // Helpers
+    const hasAuthUser = auth?.user !== undefined;
+
+    const isMemberYou = (member) => {
+        if (
+            ! hasAuthUser
+            || ! auth.user?.email
+            || ! member?.email
+        ) {
+            return false;
+        }
+
+        return member.email === auth.user.email;
+    };
+
+
+
     return (
         <AuthenticatedLayout>
             <div className="flex flex-col lg:flex-row h-full">
@@ -135,7 +153,7 @@ export default function Project({ project }) {
                         <Accordion.Item defaultOpen>
                             <Accordion.Item.Header>
                                 <span className="text-xl font-semibold">Members</span>
-                                <p className="mt-1 text-sm text-gray-600">
+                                <p className="mt-1 text-sm text-stone-600">
                                     View and manage your project's members.
                                 </p>
                             </Accordion.Item.Header>
@@ -153,7 +171,7 @@ export default function Project({ project }) {
                                 {isLoading ? (
                                     <div className="flex flex-col justify-center items-center space-y-2 py-10">
                                         <div className="w-8 h-8 border-4 border-indigo-500 border-dashed rounded-full animate-spin"></div>
-                                        <span className="text-gray-600">Loading members...</span>
+                                        <span className="text-stone-600">Loading members...</span>
                                     </div>
                                 ) : error ? (
                                     <div className="text-red-500 text-center py-10">
@@ -171,14 +189,19 @@ export default function Project({ project }) {
                                         renderRow={(member) => (
                                             <tr key={member.id}>
                                                 <Table.Row>
-                                                    <button
-                                                        type="button"
-                                                        className="text-indigo-500 font-bold hover:underline"
-                                                        onClick={(e) => handleShowMember(e, member.id)}
-                                                        disabled={processing}
-                                                    >
-                                                        {member.name ?? '--'}
-                                                    </button>
+                                                    <div className="flex items-center gap-2">
+                                                        <button
+                                                            type="button"
+                                                            className="text-indigo-500 font-bold hover:underline"
+                                                            onClick={(e) => handleShowMember(e, member.id)}
+                                                            disabled={processing}
+                                                        >
+                                                            {member.name ?? '--'}
+                                                        </button>{' '}
+                                                        {isMemberYou(member) &&
+                                                            <Tag color="amber">You</Tag>
+                                                        }
+                                                    </div>
                                                 </Table.Row>
 
                                                 <Table.Row>
@@ -206,7 +229,7 @@ export default function Project({ project }) {
                                         )}
                                     />
                                 ) : (
-                                    <div className="text-gray-600 text-center py-10 border-2 border-dashed rounded-lg">
+                                    <div className="text-stone-600 text-center py-10 border-2 border-dashed rounded-lg">
                                         No members in this project yet. Click{' '}
                                         <button
                                             type="button"

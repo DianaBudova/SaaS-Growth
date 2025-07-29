@@ -41,7 +41,7 @@ export default function Modal({
                     leaveFrom="opacity-100"
                     leaveTo="opacity-0"
                 >
-                    <div className="absolute inset-0 bg-gray-500/75" />
+                    <div className="absolute inset-0 bg-stone-500/75" />
                 </TransitionChild>
 
                 <TransitionChild
@@ -70,12 +70,12 @@ Modal.Header = function ModalHeader({ title, onClose, closeable = true }) {
             {closeable && (
                 <button
                     onClick={onClose}
-                    className="text-gray-400 hover:text-gray-600 transition"
+                    className="text-stone-400 hover:text-stone-600 transition"
                     aria-label="Close"
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        className="w-6 h-6 text-white hover:text-gray-300 transition"
+                        className="w-6 h-6 text-white hover:text-stone-300 transition"
                         viewBox="0 0 24 24"
                         fill="currentColor"
                     >

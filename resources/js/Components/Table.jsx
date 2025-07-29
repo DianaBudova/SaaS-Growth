@@ -1,21 +1,21 @@
 export default function Table({ columns, data, renderRow }) {
     return (
         <div className="overflow-x-auto border rounded">
-            <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-stone-200">
+                <thead className="bg-stone-50">
                     <tr>
                         {columns.map((col) => (
                             <th
                                 key={col.key}
                                 scope="col"
-                                className={`px-6 py-3 text-xs font-medium uppercase tracking-wider ${col.align === 'right' ? 'text-right' : 'text-left'} text-gray-500`}
+                                className={`px-6 py-3 text-xs font-medium uppercase tracking-wider ${col.align === 'right' ? 'text-right' : 'text-left'} text-stone-500`}
                             >
                                 {col.label}
                             </th>
                         ))}
                     </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-white divide-y divide-stone-200">
                     {data.map((item) => renderRow(item))}
                 </tbody>
             </table>
@@ -25,7 +25,7 @@ export default function Table({ columns, data, renderRow }) {
 
 Table.Row = function TableRow({ children }) {
     return (
-        <td className="px-6 py-4 whitespace-nowrap text-gray-800 font-medium">
+        <td className="px-6 py-4 whitespace-nowrap text-stone-800 font-medium">
             {children}
         </td>
     );

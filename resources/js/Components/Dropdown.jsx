@@ -154,7 +154,7 @@ export default forwardRef(function Dropdown(
                 onClick={toggleOpen}
                 disabled={disabled || loading}
                 className={
-                    `flex items-center w-full rounded border border-gray-300 bg-white px-3 py-2 shadow-sm text-left focus:border-indigo-500 focus:ring-indigo-500 disabled:bg-gray-100 disabled:cursor-not-allowed ${loading ? 'justify-center cursor-wait' : 'justify-between'}`
+                    `flex items-center w-full rounded border border-stone-300 bg-white px-3 py-2 shadow-sm text-left focus:border-indigo-500 focus:ring-indigo-500 disabled:bg-stone-100 disabled:cursor-not-allowed ${loading ? 'justify-center cursor-wait' : 'justify-between'}`
                 }
             >
                 {loading ? (
@@ -182,7 +182,7 @@ export default forwardRef(function Dropdown(
                 createPortal(
                     <div
                         ref={menuRef}
-                        className="absolute rounded border border-gray-200 bg-white shadow-lg z-50 max-h-60 overflow-y-auto"
+                        className="absolute rounded border border-stone-200 bg-white shadow-lg z-50 max-h-60 overflow-y-auto"
                         style={{
                             top: (buttonRef.current?.getBoundingClientRect().bottom || 0) + window.scrollY + 'px',
                             left: (buttonRef.current?.getBoundingClientRect().left || 0) + window.scrollX + 'px',
@@ -194,7 +194,7 @@ export default forwardRef(function Dropdown(
                                 key={option.id}
                                 type="button"
                                 onClick={() => handleSelect(option)}
-                                className={`w-full text-left px-3 py-2 hover:bg-gray-100 ${index === focusedIndex ? 'bg-indigo-100' : ''}`}
+                                className={`w-full text-left px-3 py-2 hover:bg-stone-100 ${index === focusedIndex ? 'bg-indigo-100' : ''}`}
                             >
                                 {option.name}
                             </button>

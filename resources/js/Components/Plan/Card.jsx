@@ -6,7 +6,7 @@ export default function Card({ plan }) {
         e.preventDefault();
 
         router.post('/payment/checkout', {
-            price_id: plan.stripe_price_id,
+            plan: plan,
         }, {
             preserveScroll: true,
             preserveState: false,
