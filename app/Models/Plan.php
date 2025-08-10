@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Enums\IntervalEnum;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Plan extends Model
 {
@@ -26,7 +28,16 @@ class Plan extends Model
      * @var array
      */
     protected $casts = [
+        'name' => 'string',
+        'description' => 'string',
+        'stripe_price_id' => 'string',
         'price' => 'decimal:2',
+        'interval' => IntervalEnum::class,
         'active' => 'boolean',
     ];
+
+    public function features(): BelongsToMany
+    {
+        return $this->belongsToMany(PlanFeature::class);
+    }
 }

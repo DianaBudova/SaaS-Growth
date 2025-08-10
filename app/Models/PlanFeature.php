@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Enums\IntervalEnum;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PlanFeature extends Model
 {
@@ -16,7 +18,7 @@ class PlanFeature extends Model
         'name',
         'slug',
         'description',
-        'limit',
+        'value',
         'active',
         'reset_interval',
         'reset_period',
@@ -28,6 +30,18 @@ class PlanFeature extends Model
      * @var array
      */
     protected $casts = [
+        'plan_id' => 'integer',
+        'name' => 'string',
+        'slug' => 'string',
+        'description' => 'string',
+        'value' => 'string',
         'active' => 'boolean',
+        'reset_interval' => 'integer',
+        'reset_period' => IntervalEnum::class,
     ];
+
+    public function plan(): BelongsTo
+    {
+        return $this->belongsTo(Plan::class);
+    }
 }

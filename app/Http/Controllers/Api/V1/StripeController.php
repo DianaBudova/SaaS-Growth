@@ -2,12 +2,19 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Services\Subscription\SubscriptionEndDateService;
+use App\Services\Subscription\SubscriptionFeatureManager;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Laravel\Cashier\Cashier;
 
 class StripeController extends Controller
 {
+    public function __construct(
+        private SubscriptionEndDateService $endDateService,
+        private SubscriptionFeatureManager $featureService
+    ) {}
+
     public function subscribe(Request $request)
     {
         $user = $request->user();
@@ -34,14 +41,15 @@ class StripeController extends Controller
         $user->updateDefaultPaymentMethod($paymentMethodId);
 
         try {
-            $subscription = $user->newSubscription('default', $priceId)
+            $subscription = $user
+                ->newSubscription('default', $priceId)
                 ->create($paymentMethodId);
 
-            $subscription->cancel();
+            $this->endDateService->setEndDateSubscription($subscription);
+            $this->featureService->syncFeaturesWithPlan($subscription);
 
             return response()->json([
-                'status'       => 'active',
-                'subscription' => $subscription
+                'status' => $subscription->stripe_status
             ]);
         } catch (\Throwable $e) {
             report($e);

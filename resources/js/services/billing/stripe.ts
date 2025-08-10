@@ -1,9 +1,5 @@
 import { fetchAPI } from '@/helpers';
-
-interface SubscribeResult {
-    status: 'active' | 'requires_action';
-    redirect_url?: string;
-}
+import { SubscribeResult } from '@/contracts/api/subscribe-result';
 
 export async function subscribe(priceId: string, paymentMethodId: string): Promise<SubscribeResult> {
     const res = await fetchAPI('/v1/subscribe', {

@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\IntervalEnum;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -22,8 +23,8 @@ return new class extends Migration
             $table->boolean('active')->default(true);
 
             $table->unsignedInteger('reset_interval')->default(0);
-            $table->enum('reset_period', ['day', 'week', 'month', 'year'])->default('month');
-            $table->timestamp('reset_at')->nullable();
+            $table->enum('reset_period', array_column(IntervalEnum::cases(), 'value'))
+                ->default(IntervalEnum::MONTH->value);
 
             $table->timestamps();
         });

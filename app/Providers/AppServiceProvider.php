@@ -2,10 +2,12 @@
 
 namespace App\Providers;
 
+use App\Models\Subscription;
 use App\Services\InvitationService;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Cashier\Cashier;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -14,9 +16,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->bind(InvitationService::class, function ($app) {
-            return new InvitationService();
-        });
+        Cashier::useSubscriptionModel(Subscription::class);
     }
 
     /**
