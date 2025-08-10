@@ -5,35 +5,23 @@ namespace App\Http\Controllers\Api\V1;
 use App\Services\Subscription\SubscriptionEndDateService;
 use App\Services\Subscription\SubscriptionFeatureManager;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Resources\SubscriptionResource;
+use App\Http\Requests\Api\V1\SubscribeRequest;
 use Laravel\Cashier\Cashier;
 
-class StripeController extends Controller
+class SubscribeController extends Controller
 {
     public function __construct(
         private SubscriptionEndDateService $endDateService,
         private SubscriptionFeatureManager $featureService
     ) {}
 
-    public function subscribe(Request $request)
+    public function __invoke(SubscribeRequest $request): SubscriptionResource
     {
         $user = $request->user();
 
-        if (!$user) {
-            return response()->json(['error' => 'User not found'], 404);
-        }
-
         $priceId = $request->input('stripe_price_id');
-
-        if (!$priceId) {
-            return response()->json(['error' => 'Missing plan identifier.'], 422);
-        }
-
         $paymentMethodId = $request->input('payment_method');
-
-        if (!$paymentMethodId) {
-            return response()->json(['error' => 'Payment method is required'], 422);
-        }
 
         $user->createOrGetStripeCustomer();
 
@@ -48,9 +36,7 @@ class StripeController extends Controller
             $this->endDateService->setEndDateSubscription($subscription);
             $this->featureService->syncFeaturesWithPlan($subscription);
 
-            return response()->json([
-                'status' => $subscription->stripe_status
-            ]);
+            return new SubscriptionResource($subscription);
         } catch (\Throwable $e) {
             report($e);
             return response()->json(['error' => 'Unable to create subscription.'], 500);

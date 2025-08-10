@@ -15,6 +15,6 @@ class SubscriptionFeatureManager
             return;
         }
 
-        $subscription->features()->sync($plan->features);
+        $subscription->features()->save($plan->features);
     }
 }

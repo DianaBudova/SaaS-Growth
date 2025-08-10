@@ -55,6 +55,9 @@ export default function Checkout() {
                                     },
                                 },
                             }}
+                            onReady={(element) => {
+                                element.focus();
+                            }}
                         />
                     </div>
 

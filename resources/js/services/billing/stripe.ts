@@ -10,5 +10,5 @@ export async function subscribe(priceId: string, paymentMethodId: string): Promi
         },
     });
 
-    return res as SubscribeResult;
+    return res.result as SubscribeResult;
 }
