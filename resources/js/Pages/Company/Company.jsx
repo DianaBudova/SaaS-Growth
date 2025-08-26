@@ -9,8 +9,9 @@ import DangerButton from '@/Components/DangerButton';
 import Accordion from '@/Components/Accordion';
 import { fetchAPI } from '@/helpers';
 import ResourceSidebar from '@/Components/ResourceSidebar';
+import Tag from '@/Components/Tag';
 
-export default function Company({ company }) {
+export default function Company({ company, auth }) {
     // States
     const [projects, setProjects] = useState([]);
     const [members, setMembers]   = useState([]);
@@ -149,7 +150,6 @@ export default function Company({ company }) {
         router.visit(`/project/${projectId}`, {
             preserveState: true,
             preserveScroll: true,
-            replace: true,
         });
     };
 
@@ -184,6 +184,23 @@ export default function Company({ company }) {
             preserveScroll: true,
             replace: true,
         });
+    };
+
+
+
+    // Helpers
+    const hasAuthUser = auth?.user !== undefined;
+
+    const isMemberYou = (member) => {
+        if (
+            ! hasAuthUser
+            || ! auth.user?.email
+            || ! member?.email
+        ) {
+            return false;
+        }
+
+        return member.email === auth.user.email;
     };
 
 
@@ -278,7 +295,7 @@ export default function Company({ company }) {
                                                             disabled={processing}
                                                             onClick={(e) => handleDeleteProject(e, project.id)}
                                                         >
-                                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-4 h-4 fill-current">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5 fill-current">
                                                                 <path d="M 10.806641 2 C 10.289641 2 9.7956875 2.2043125 9.4296875 2.5703125 L 9 3 L 4 3 A 1.0001 1.0001 0 1 0 4 5 L 20 5 A 1.0001 1.0001 0 1 0 20 3 L 15 3 L 14.570312 2.5703125 C 14.205312 2.2043125 13.710359 2 13.193359 2 L 10.806641 2 z M 4.3652344 7 L 5.8925781 20.263672 C 6.0245781 21.253672 6.877 22 7.875 22 L 16.123047 22 C 17.121047 22 17.974422 21.254859 18.107422 20.255859 L 19.634766 7 L 4.3652344 7 z"></path>
                                                             </svg>
                                                         </DangerButton>
@@ -350,7 +367,10 @@ export default function Company({ company }) {
                                                         disabled={processing}
                                                     >
                                                         {member.name ?? '--'}
-                                                    </button>
+                                                    </button>{' '}
+                                                    {isMemberYou(member) &&
+                                                        <Tag color="amber">You</Tag>
+                                                    }
                                                 </Table.Row>
 
                                                 <Table.Row>
@@ -368,7 +388,7 @@ export default function Company({ company }) {
                                                             disabled={processing}
                                                             onClick={(e) => handleExcludeMember(e, member.id)}
                                                         >
-                                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-4 h-4 fill-current">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5 fill-current">
                                                                 <path d="M 10.806641 2 C 10.289641 2 9.7956875 2.2043125 9.4296875 2.5703125 L 9 3 L 4 3 A 1.0001 1.0001 0 1 0 4 5 L 20 5 A 1.0001 1.0001 0 1 0 20 3 L 15 3 L 14.570312 2.5703125 C 14.205312 2.2043125 13.710359 2 13.193359 2 L 10.806641 2 z M 4.3652344 7 L 5.8925781 20.263672 C 6.0245781 21.253672 6.877 22 7.875 22 L 16.123047 22 C 17.121047 22 17.974422 21.254859 18.107422 20.255859 L 19.634766 7 L 4.3652344 7 z"></path>
                                                             </svg>
                                                         </DangerButton>

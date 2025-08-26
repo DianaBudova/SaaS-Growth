@@ -5,6 +5,7 @@ import Accordion from '@/Components/Accordion';
 import PrimaryButton from '@/Components/PrimaryButton';
 import Table from '@/Components/Table';
 import DangerButton from '@/Components/DangerButton';
+import SecondaryButton from '@/Components/SecondaryButton';
 import { router, useForm } from '@inertiajs/react';
 import { fetchAPI } from '@/helpers';
 import InviteModal from '@/Components/Modals/InviteModal';
@@ -33,7 +34,7 @@ export default function Project({ project, auth }) {
         processing,
         errors,
     } = useForm(initialInvitationFormState);
-    
+
     // Form Resets
     const resetInvitationForm = () => setData(initialInvitationFormState);
 
@@ -121,9 +122,9 @@ export default function Project({ project, auth }) {
 
     const isMemberYou = (member) => {
         if (
-            ! hasAuthUser
-            || ! auth.user?.email
-            || ! member?.email
+            !hasAuthUser
+            || !auth.user?.email
+            || !member?.email
         ) {
             return false;
         }
@@ -139,12 +140,12 @@ export default function Project({ project, auth }) {
                 <ResourceSidebar
                     title={project.name}
                     meta={[
-                        { label: 'Project ID',  value: project.id },
+                        { label: 'Project ID', value: project.id },
                         { label: 'Description', value: project.description || '--' },
-                        { label: 'Start date',  value: project.start_date ? new Date(project.start_date).toLocaleDateString() : '--' },
-                        { label: 'End date',    value: project.end_date ? new Date(project.start_date).toLocaleDateString() : '--' },
-                        { label: 'Created',     value: new Date(project.created_at).toLocaleDateString() },
-                        { label: 'Updated',     value: new Date(project.updated_at).toLocaleDateString() },
+                        { label: 'Start date', value: project.start_date ? new Date(project.start_date).toLocaleDateString() : '--' },
+                        { label: 'End date', value: project.end_date ? new Date(project.start_date).toLocaleDateString() : '--' },
+                        { label: 'Created', value: new Date(project.created_at).toLocaleDateString() },
+                        { label: 'Updated', value: new Date(project.updated_at).toLocaleDateString() },
                     ]}
                 />
 
@@ -214,12 +215,21 @@ export default function Project({ project, auth }) {
 
                                                 <Table.Row>
                                                     <div className="flex justify-end gap-3">
+                                                        <SecondaryButton
+                                                            className="!p-2.5"
+                                                            disabled={processing}
+                                                            onClick={(e) => handleExcludeMember(e, member.id)}
+                                                        >
+                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />
+                                                            </svg>
+                                                        </SecondaryButton>
                                                         <DangerButton
                                                             className="!p-2.5"
                                                             disabled={processing}
                                                             onClick={(e) => handleExcludeMember(e, member.id)}
                                                         >
-                                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-4 h-4 fill-current">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5 fill-current">
                                                                 <path d="M 10.806641 2 C 10.289641 2 9.7956875 2.2043125 9.4296875 2.5703125 L 9 3 L 4 3 A 1.0001 1.0001 0 1 0 4 5 L 20 5 A 1.0001 1.0001 0 1 0 20 3 L 15 3 L 14.570312 2.5703125 C 14.205312 2.2043125 13.710359 2 13.193359 2 L 10.806641 2 z M 4.3652344 7 L 5.8925781 20.263672 C 6.0245781 21.253672 6.877 22 7.875 22 L 16.123047 22 C 17.121047 22 17.974422 21.254859 18.107422 20.255859 L 19.634766 7 L 4.3652344 7 z"></path>
                                                             </svg>
                                                         </DangerButton>
